@@ -1,0 +1,4 @@
+require 'lbwriter-lib'
+
+blog = LivedoorBlogWriter::Blog.new()
+

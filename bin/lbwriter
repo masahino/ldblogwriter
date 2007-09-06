@@ -1,0 +1,13 @@
+#! /opt/local/bin/ruby
+
+require 'lbwriter-lib'
+require 'optparse'
+
+opt = OptionParser.new
+dry_run = false
+opt.on('-n') {|v| dry_run = v}
+
+opt.parse!(ARGV)
+
+blog = LivedoorBlogWriter::Blog.new()
+blog.post_entry(ARGV[0], dry_run)
