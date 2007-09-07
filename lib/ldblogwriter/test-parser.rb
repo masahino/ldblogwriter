@@ -3,7 +3,7 @@ require 'config.rb'
 require 'parser.rb'
 
 
-module LivedoorBlogWriter
+module LDBlogWriter
   class Command
     def upload(atom_uri, user, pass, filename, title = nil)
       return 'http://image.blog.livedoor.jp/test_user/imgs/8/a/8a4d2846.jpg'
@@ -13,7 +13,7 @@ end
 
 class TestParser < Test::Unit::TestCase
   def setup
-    @parser = LivedoorBlogWriter::Parser.new(LivedoorBlogWriter::Config.new('test.conf'))
+    @parser = LDBlogWriter::Parser.new(LivedoorBlogWriter::Config.new('test.conf'))
   end
 
     def test_to_html

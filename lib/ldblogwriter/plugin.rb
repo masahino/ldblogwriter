@@ -1,4 +1,4 @@
-module LivedoorBlogWriter
+module LDBlogWriter
   class Plugin
     def initialize(conf)
       @conf = conf

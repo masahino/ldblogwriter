@@ -2,7 +2,7 @@ require 'digest/sha1'
 require 'base64'
 require 'time'
 
-module LivedoorBlogWriter
+module LDBlogWriter
   class Wsse
     def Wsse::get(user, pass)
       created = Time.now.iso8601

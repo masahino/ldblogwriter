@@ -1,6 +1,6 @@
 require 'rexml/document'
 
-module LivedoorBlogWriter
+module LDBlogWriter
 
   class AtomResponse
     attr_accessor :source, :doc

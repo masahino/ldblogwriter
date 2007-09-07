@@ -1,5 +1,5 @@
-require 'lbwriter-lib'
+require 'ldblogwriter-lib'
 
-lbw = LivedoorBlogWriter::Blog.new
+lbw = LDBlogWriter::Blog.new
 
 pp lbw.get_categories

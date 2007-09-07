@@ -1,6 +1,6 @@
 #! /opt/local/bin/ruby
 
-require 'lbwriter-lib'
+require 'ldblogwriter-lib'
 require 'optparse'
 
 opt = OptionParser.new
@@ -9,5 +9,5 @@ opt.on('-n') {|v| dry_run = v}
 
 opt.parse!(ARGV)
 
-blog = LivedoorBlogWriter::Blog.new()
+blog = LDBlogWriter::Blog.new()
 blog.post_entry(ARGV[0], dry_run)

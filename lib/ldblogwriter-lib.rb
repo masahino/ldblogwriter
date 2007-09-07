@@ -5,15 +5,15 @@ require 'rexml/document'
 require 'pp'
 require 'uri'
 require 'yaml'
-require 'lbwriter/parser'
-require 'lbwriter/command'
-require 'lbwriter/config'
-require 'lbwriter/wsse'
-require 'lbwriter/plugin'
+require 'ldblogwriter/parser'
+require 'ldblogwriter/command'
+require 'ldblogwriter/config'
+require 'ldblogwriter/wsse'
+require 'ldblogwriter/plugin'
 
 Net::HTTP.version_1_2
 
-module LivedoorBlogWriter
+module LDBlogWriter
   VERSION = '0.0.1'
 
   class BlogEntry
@@ -71,7 +71,7 @@ module LivedoorBlogWriter
 
   # ここからスタート
   class Blog
-    ConfigFile = ENV['HOME'] + "/.lbwriter.conf"
+    ConfigFile = ENV['HOME'] + "/.ldblogwriter.conf"
 
     def initialize()
       @conf = Config.new(ConfigFile)
@@ -220,7 +220,7 @@ if defined?($test) && $test
 
   class TestBlog < Test::Unit::TestCase
     def test_check_config
-      blog = LivedoorBlogWriter::Blog.new('lbwriter-lib.rb')
+      blog = LDBlogWriter::Blog.new('ldblogwriter-lib.rb')
     end
   end
 end

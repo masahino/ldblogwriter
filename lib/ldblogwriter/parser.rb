@@ -1,6 +1,6 @@
 require 'open-uri'
 require 'pp'
-require 'lbwriter/command'
+require 'ldblogwriter/command'
 require 'yaml'
 
 # parserは、pukiwikiparser.rbを参考にしています。
@@ -10,7 +10,7 @@ require 'yaml'
 # #プラグイン名
 # #プラグイン名(arg1, arg2...)
 
-module LivedoorBlogWriter
+module LDBlogWriter
 
   class Parser
     def initialize(conf, plugin)

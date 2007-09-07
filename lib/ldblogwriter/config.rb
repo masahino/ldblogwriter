@@ -1,4 +1,4 @@
-module LivedoorBlogWriter
+module LDBlogWriter
   class Config
     attr_accessor :atom_api_uri, :categories_uri
     attr_accessor :post_uri, :upload_uri, :username, :password

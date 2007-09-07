@@ -1,4 +1,4 @@
-require 'lbwriter-lib'
+require 'ldblogwriter-lib'
 
-blog = LivedoorBlogWriter::Blog.new()
+blog = LDBlogWriter::Blog.new()
 

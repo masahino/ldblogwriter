@@ -1,10 +1,10 @@
 $LOAD_PATH << '../../lib' unless $LOAD_PATH.include? '..'
 
 require 'net/http'
-require 'lbwriter/wsse'
-require 'lbwriter/atom_response'
+require 'ldblogwriter/wsse'
+require 'ldblogwriter/atom_response'
 
-module LivedoorBlogWriter
+module LDBlogWriter
 
   class Command
     def get(uri_str, username, password)
