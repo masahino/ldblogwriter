@@ -1,6 +1,6 @@
 ; ndiary-modeをベースに作成
 ;
-(defcustom lbwriter-post-command "lbwriter"
+(defcustom lbwriter-post-command "lbw"
   "blog投稿用コマンド. Emacsが実行可能なファイルである必要がある."
   :type 'filename
   :group 'lbwriter-mode)

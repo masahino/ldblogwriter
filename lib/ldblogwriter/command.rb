@@ -53,11 +53,10 @@ module LDBlogWriter
         res = http.post(uri.path, data,
                         {'X-WSSE' => Wsse::get(username, password)})
         if res.code != "201"
+          p res
           return false
         end
         edit_uri = res['Location']
-        #      return BlogWriter::Response.new(res.body)
-#        save_edit_uri(edit_uri)
         return edit_uri
       end
     end

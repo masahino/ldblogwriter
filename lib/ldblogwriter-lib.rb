@@ -32,12 +32,11 @@ module LDBlogWriter
       #      data += "<subject xmlns=\"http://purl.org/dc/elements/1.1/\">#{category}</subject>\n"
       #    end
       data += "<subject xmlns=\"http://purl.org/dc/elements/1.1/\">#{@category}</subject>\n"
-    data += "<content xmlns=\"http://purl.org/atom/ns#\" mode=\"base64\">"
-    data += [@content].pack("m")
-    data += "</content>\n"
-    data += "</entry>\n"
-    #    puts data
-    return data
+      data += "<content xmlns=\"http://purl.org/atom/ns#\" mode=\"base64\">"
+      data += [@content].pack("m")
+      data += "</content>\n"
+      data += "</entry>\n"
+      return data
   end
   end
 
@@ -125,7 +124,9 @@ module LDBlogWriter
                                   @conf.password,
                                   title, category, content)
           puts "editURI : #{edit_uri}"
-          save_edit_uri(filename, edit_uri)
+          if edit_uri != false
+            save_edit_uri(filename, edit_uri)
+          end
         end
       else
         # edit
