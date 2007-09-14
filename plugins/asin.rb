@@ -12,8 +12,8 @@ def asin(asin_str)
   cache_dir = ENV['HOME'] + "/.amazon_cache"
   request = Amazon::Search::Request.new(amazon_token,
                                         amazon_id,
-                                        "jp", cache_dir)
-
+                                        "jp", false)
+  request.cache = Amazon::Search::Cache.new(cache_dir)
   image_url_large = image_url_medium = nil
   url = nil
   title = nil

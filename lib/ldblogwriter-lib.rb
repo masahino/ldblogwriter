@@ -106,7 +106,11 @@ module LDBlogWriter
         puts "title : #{title}"
         src_text = file.read
       end
-      content = Parser.new(@conf, @plugin).to_html(src_text)
+      if @conf.convert_to_html == true
+        content = Parser.new(@conf, @plugin).to_html(src_text)
+      else
+        content = src_text
+      end
       if $DEBUG
         puts category
         puts title
