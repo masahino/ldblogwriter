@@ -6,6 +6,7 @@ module LDBlogWriter
     attr_accessor :convert_to_html
     attr_accessor :plugin_dir
     attr_accessor :options
+    attr_accessor :dry_run
 
     def initialize(filename)
       @options = Hash.new

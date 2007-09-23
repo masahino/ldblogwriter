@@ -52,11 +52,19 @@ module LDBlogWriter
         data = entry.to_xml
         res = http.post(uri.path, data,
                         {'X-WSSE' => Wsse::get(username, password)})
-        if res.code != "201"
-          p res
-          return false
+        case res.code
+        when "201"
+          edit_uri = res['Location']
+        when "404"
+          puts res.body
+          edit_uri = false
+        when "200"
+          puts res.body
+          edit_uri = false
+        else
+          edit_uri = false
         end
-        edit_uri = res['Location']
+
         return edit_uri
       end
     end

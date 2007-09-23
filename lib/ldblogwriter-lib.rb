@@ -98,7 +98,11 @@ module LDBlogWriter
         line = file.gets
         line.gsub!(/^<(.*)>\s+/) do |str|
           category = $1
-          puts "category : #{category}"
+          if get_categories.include?(category)
+            puts "category : #{category}"
+          else
+            puts "unknown category : #{category}"
+          end
           str.replace("")
         end
         title = line
@@ -194,6 +198,17 @@ module LDBlogWriter
 
     def print_usage
       puts "#{$0} [-n] <text file>" 
+    end
+
+    def get_services
+      com = Command.new
+      service_list = Command.new.get(@conf.atom_api_uri, @conf.username, @conf.password)
+#      if service_list != false
+#        service_list.doc.elements.each('feed/link') do |element|
+#          puts element.attributes['rel'] + ":" + element.attributes['href']
+#        end
+#      end
+      return service_list
     end
 
     def get_categories
