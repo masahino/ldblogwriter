@@ -84,6 +84,7 @@ module LDBlogWriter
     end
 
     def post_entry(filename, dry_run = true)
+      @blog_filename = filename
       puts "post entry"
       if filename == nil
         print_usage
