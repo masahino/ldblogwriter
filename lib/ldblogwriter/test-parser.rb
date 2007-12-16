@@ -13,7 +13,7 @@ end
 
 class TestParser < Test::Unit::TestCase
   def setup
-    @parser = LDBlogWriter::Parser.new(LivedoorBlogWriter::Config.new('test.conf'))
+    @parser = LDBlogWriter::Parser.new(LDBlogWriter::Config.new('test.conf'),nil)
   end
 
     def test_to_html
@@ -61,5 +61,14 @@ class TestParser < Test::Unit::TestCase
 
   def test_get_small_img_uri
     assert_equal('http://image.blog.livedoor.jp/test_user/imgs/8/a/8a4d2846-s.jpg', @parser.get_small_img_uri('http://image.blog.livedoor.jp/test_user/imgs/8/a/8a4d2846.jpg'))
+  end
+
+  def test_parse_inline
+    assert_equal("<a class=\"outlink\" href=\"http://www.google.com\">http://www.google.com</a>", 
+                 @parser.parse_inline("http://www.google.com"))
+  end
+
+  def test_parse_pre_highlight
+    assert_equal("hoge", @parser.to_html(" highlight(ruby)\n def hoge()\n end"))
   end
 end

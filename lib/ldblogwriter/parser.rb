@@ -34,6 +34,9 @@ module LDBlogWriter
         case lines.first
         when ''
           lines.shift
+        when /\A----/
+          lines.shift
+          buf.push '<hr />'
         when /\Aimg\(.*\)/
           buf.push parse_img(lines.shift)
         when /\A\s/
@@ -57,7 +60,6 @@ module LDBlogWriter
 
 #private
 
-
     def take_block(lines, marker)
       buf = []
       until lines.empty?
@@ -67,9 +69,21 @@ module LDBlogWriter
       buf
     end
 
+    def syntax_highlight(lines, lang)
+      require 'syntax/convertors/html'
+      convertor = Syntax::Convertors::HTML.for_syntax lang
+      ["<div class=\"ruby\">" + convertor.convert(lines.join("\n")) + "</div>\n"]
+    end
+
     def parse_pre(lines)
-      ["<pre>#{lines.map {|line| escape_html(line) }.join("\n")}",
+      # コードのハイライト対応
+      if lines.first =~ /\Ahighlight\((.*)\)/
+        lines.shift
+        syntax_highlight(lines, $1)
+      else
+        ["<pre>#{lines.map {|line| escape_html(line) }.join("\n")}",
         '</pre>']
+      end
     end
 
     def parse_quote(lines)
@@ -140,6 +154,7 @@ module LDBlogWriter
         rescue
           upload_uri_h = Hash.new
         end
+puts img_path
         if upload_uri_h[File.basename(img_path)] == nil
           # 新規アップロード
           com = Command.new
@@ -165,27 +180,31 @@ module LDBlogWriter
       return buf
     end
 
-    def parse_p(line)
-      line
+    def parse_p(lines)
+      lines.map {|line| parse_inline(line) }
     end
 
- def parse_inline(str)
-    @inline_re ||= %r<
+ def a_href(uri, label, cssclass)
+   %Q[<a class="#{cssclass}" href="#{escape_html(uri)}">#{escape_html(label)}</a>]
+ end
+
+    def parse_inline(str)
+      @inline_re ||= %r<
         ([&<>"])                             # $1: HTML escape characters
       | \[\[(.+?):\s*(https?://\S+)\s*\]\]   # $2: label, $3: URI
       | (#{URI.regexp('http')})              # $5...: URI autolink
       >x
-    str.gsub(@inline_re) {
-      case
-      when htmlchar = $1 then escape(htmlchar)
-      when bracket  = $2 then a_href($3, bracket, 'outlink')
-      when pagename = $4 then a_href(page_uri(pagename), pagename, 'pagelink')
-      when uri      = $5 then a_href(uri, uri, 'outlink')
-      else
-        raise 'must not happen'
-      end
-    }
-  end    
+      str.gsub(@inline_re) {
+        case
+        when htmlchar = $1 then escape_html(htmlchar)
+        when bracket  = $2 then a_href($3, bracket, 'outlink')
+#        when pagename = $4 then "not support $3" #a_href(page_uri(pagename), pagename, 'pagelink')
+        when uri      = $4 then a_href(uri, uri, 'outlink')
+        else
+          raise 'must not happen'
+        end
+      }
+    end
   end
 
 end
