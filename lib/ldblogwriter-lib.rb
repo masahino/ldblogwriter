@@ -112,6 +112,9 @@ module LDBlogWriter
       end
       if @conf.convert_to_html == true
         content = Parser.new(@conf, @plugin).to_html(src_text)
+        if @conf.html_directory != nil
+          save_html_file(@conf.html_directory, File.basename(filename), content)
+        end
       else
         content = src_text
       end
@@ -222,11 +225,28 @@ module LDBlogWriter
       return categories
     end
 
-
     def save_edit_uri(filename, edit_uri)
       filename = File.basename(filename)
       @edit_uri_h[filename] = edit_uri
       YAML.dump(@edit_uri_h, File.open(@conf.edit_uri_file, 'w'))
+    end
+
+    def save_html_file(directory, filename, text)
+      # directoryなかったら作る
+      if File.exists?(directory) 
+        if File.ftype(directory) != "directory"
+          puts "#{directory} is not directory"
+          return
+        end
+      else
+        Dir.mkdir(directory)
+      end
+      # open
+      filename.gsub!(/.txt$/, ".html")
+      puts "write html to #{filename}"
+      File.open(directory + "/" + filename, "w") do |file|
+        file.write(text)
+      end
     end
   end
 

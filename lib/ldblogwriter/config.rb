@@ -3,7 +3,7 @@ module LDBlogWriter
     attr_accessor :atom_api_uri, :categories_uri
     attr_accessor :post_uri, :upload_uri, :username, :password
     attr_accessor :edit_uri_file, :upload_uri_file
-    attr_accessor :convert_to_html
+    attr_accessor :convert_to_html, :html_directory
     attr_accessor :plugin_dir
     attr_accessor :options
     attr_accessor :dry_run
