@@ -1,77 +1,66 @@
-require 'amazon/search'
+#require 'amazon/search'
+#require 'net/http'
 require 'open-uri'
+require 'pp'
+require 'rexml/document'
+
+#Net::HTTP.version_1_2
+
+class AmazonECS
+
+  SERVICE_URL = 'http://webservices.amazon.co.jp/onca/xml?Service=AWSECommerceService'
+  def initialize(arg_hash)
+    @subscription_id = arg_hash['subscription_id']
+    @associate_tag = arg_hash['associate_tag']
+    @base_url = SERVICE_URL + "&SubscriptionId=#{@subscription_id}&AssociateTag=#{@associate_tag}"
+  end
+  
+  def item_lookup(asin)
+    uri = @base_url + "&Operation=ItemLookup" + "&ResponseGroup=Small,Images" +
+      "&IdType=ASIN&ItemId=#{asin}"
+    item_h = Hash.new
+    open(uri) do |f|
+      response = f.gets
+      response = REXML::Document.new(response)
+      item = response.elements['ItemLookupResponse/Items/Item']
+      item_h['DetailPageURL'] = item.elements['DetailPageURL'].get_text
+      item_h['MediumImageURL'] = item.elements['MediumImage/URL'].get_text
+      item_h['Title'] = item.elements['ItemAttributes/Title'].get_text
+      item_h['Author'] = item.elements['ItemAttributes/Author'].get_text
+      item_h['Manufacturer'] = item.elements['ItemAttributes/Manufacturer'].get_text
+    end
+    return item_h
+  end
+end
 
 # amazonのasinを指定して、その商品へのリンクを作成するプラグイン
 # #asin(<ASIN>)
 def asin(asin_str)
-  amazon_token = @conf.options['amazon_dev_token']
-  amazon_id = @conf.options['amazon_assoc_id']
-  if amazon_token == nil or amazon_id == nil
+  sub_id = @conf.options['amazon_sub_id']
+  assoc_id = @conf.options['amazon_assoc_id']
+  if sub_id == nil or assoc_id == nil
     return
   end
-  cache_dir = ENV['HOME'] + "/.amazon_cache"
-  request = Amazon::Search::Request.new(amazon_token,
-                                        amazon_id,
-                                        "jp", false)
-  request.cache = Amazon::Search::Cache.new(cache_dir)
+#  cache_dir = ENV['HOME'] + "/.amazon_cache"
+  ecs = AmazonECS.new('subscription_id' => sub_id,
+                      'associate_tag' => assoc_id)
+  item = ecs.item_lookup(asin_str)
   image_url_large = image_url_medium = nil
-  url = nil
-  title = nil
-  author = artist = nil
-  manufacturer = nil
-  release_date = nil
-  request.asin_search(asin_str.to_s) do |product|
-    begin
-      title = product.product_name
-    rescue
-      title = "error!!"
-    end
-    url = product.url.gsub(/(http:.*\/#{amazon_id})\?.*/) do |u|
-      $1 + "/ref=nosim"
-    end
-    image_size = 0
-
-    if product.image_url_medium == nil
-      image_url_large = image_url_medium = nil
-    else        
-      open(product.image_url_medium) do |f|
-        image_size = f.length
-      end
-      if image_size != 807 
-        image_url_large = product.image_url_large
-        image_url_medium = product.image_url_medium
-      else
-        image_url_large = image_url_medium = nil
-      end
-    end
-    if product.authors != nil
-      author = product.authors.join("/")  
-    elsif product.artists != nil
-      artist = product.artists.join("/")
-    end            
-    manufacturer = product.manufacturer
-    release_date = product.release_date
-  end
-
+ 
   result = ""
   result =  "<div class=\"amazon\">\n"
   result += "<div class=\"amazon-img\">\n"
-  if image_url_large != nil
-    result += "<a href=\"#{url}\">\n"
-    result += "<img src=\"#{image_url_medium}\" alt=\"#{title}\" /></a>\n"
-  else
-    # image ないとき
-    #result += @diary.config['NO_IMAGE_FILE']
-  end
+  result += "<a href=\"#{item['DetailPageURL']}\">\n"
+  result += "<img src=\"#{item['MediumImageURL']}\" alt=\"#{item['Title']}\" /></a>\n"
   result += "</div>\n"
-  result += "『<a href=\"#{url}\">#{title}</a>』<br />\n"
-  if author != nil
-    result += "著者:#{author}<br />\n"
-  elsif artist != nil
-    result += "アーティスト:#{artist}<br />\n"
-  end            
-  result += "#{manufacturer}<br />\n"
-  result += "発売日:#{release_date}<br />\n"
+  result += "『<a href=\"#{item['DetailPageURL']}\">#{item['Title']}</a>』<br />\n"
+#  if author != nil
+    result += "著者:#{item['Author']}<br />\n"
+#  elsif artist != nil
+#    result += "アーティスト:#{artist}<br />\n"
+#  end            
+  result += "#{item['Manufacturer']}<br />\n"
+#  result += "発売日:#{release_date}<br />\n"
   result += "</div>\n"
   #          result += "<p>"
   
