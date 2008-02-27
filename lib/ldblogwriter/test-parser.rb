@@ -1,7 +1,7 @@
 require 'test/unit'
 require 'config.rb'
 require 'parser.rb'
-
+require 'entry.rb'
 
 module LDBlogWriter
   class Command
@@ -13,7 +13,8 @@ end
 
 class TestParser < Test::Unit::TestCase
   def setup
-    @parser = LDBlogWriter::Parser.new(LDBlogWriter::Config.new('test.conf'),nil)
+    @conf = LDBlogWriter::Config.new('test.conf')
+    @parser = LDBlogWriter::Parser.new(@conf, nil)
   end
 
     def test_to_html
@@ -69,6 +70,15 @@ class TestParser < Test::Unit::TestCase
   end
 
   def test_parse_pre_highlight
-    assert_equal("hoge", @parser.to_html(" highlight(ruby)\n def hoge()\n end"))
+    assert_equal("<div class=\"ruby\"><pre><span class=\"keyword\">def </span><span class=\"method\">hoge</span><span class=\"punct\">()</span>\n<span class=\"keyword\">end</span></pre></div>\n",
+                 @parser.to_html(" highlight(ruby)\n def hoge()\n end"))
+  end
+
+  def test_parse_a_href
+    entry = LDBlogWriter::BlogEntry.new(@conf, "test", "category")
+    @parser.to_html("[[hoge:http://blog.livedoor.jp/masahino123/archives/64994357.html]]", entry)
+    assert_equal(["http://app.blog.livedoor.jp/masahino123/tb.cgi/64994357"],
+                 entry.trackback_url_array)
+    
   end
 end

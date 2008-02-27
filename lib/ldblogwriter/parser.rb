@@ -191,12 +191,12 @@ puts img_path
           contents = f.read
           trackback_ping = []
           contents.scan(%r|<rdf:Description\s+([^>]+)>|) do |attr|
-            attr[0].scan(%r|\s+([^=]+)="([^"]+)"|) do |key, value|
+            attr[0].scan(%r|\s+([^=]+)="([^\"]+)"|) do |key, value|
               trackback_ping << value if key == 'trackback:ping'
             end
           end
           if @entry != nil
-            @entry.trackback_url_array = trackback_ping
+            @entry.trackback_url_array += trackback_ping
           end
         end
       end
