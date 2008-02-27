@@ -45,10 +45,10 @@ module LDBlogWriter
       end
     end
 
-    def post(uri_str, username, password, title, category, text)
+    def post(uri_str, username, password, entry)
       uri = URI.parse(uri_str)
       Net::HTTP.start(uri.host, uri.port) do |http|
-        entry = BlogEntry.new(title, category, text)
+#        entry = BlogEntry.new(entry.title, entry.category, entry.content)
         data = entry.to_xml
         res = http.post(uri.path, data,
                         {'X-WSSE' => Wsse::get(username, password)})
@@ -69,10 +69,10 @@ module LDBlogWriter
       end
     end
 
-    def edit(uri_str, user, pass, title, category, text)
+    def edit(uri_str, user, pass, entry)
       uri = URI.parse(uri_str)
       Net::HTTP.start(uri.host, uri.port) do |http|
-        entry = BlogEntry.new(title, category, text)
+#        entry = BlogEntry.new(entry.title, entry.category, entry.content)
         data = entry.to_xml
         res = http.put(uri.path, data, {'X-WSSE' => Wsse::get(user, pass)})
         if $DEBUG

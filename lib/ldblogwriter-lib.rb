@@ -10,6 +10,7 @@ require 'ldblogwriter/command'
 require 'ldblogwriter/config'
 require 'ldblogwriter/wsse'
 require 'ldblogwriter/plugin'
+require 'ldblogwriter/trackback'
 
 Net::HTTP.version_1_2
 
@@ -18,10 +19,16 @@ module LDBlogWriter
 
   class BlogEntry
     attr_accessor :title, :category, :content
-    def initialize(title, category, content)
+    attr_accessor :summary, :alternate
+    attr_accessor :send_tb
+    attr_accessor :trackback_url_array
+    def initialize(conf, title, category = nil, content = nil)
+      @conf = conf
       @title = title
       @category = category
       @content = content
+      @send_tb = false
+      @trackback_url_array = []
     end
     
     def to_xml
@@ -37,7 +44,26 @@ module LDBlogWriter
       data += "</content>\n"
       data += "</entry>\n"
       return data
-  end
+    end
+
+    def get_entry_info(edit_uri)
+      entry_info = Command.new.get(edit_uri, @conf.username, @conf.password)
+      entry_info.doc.elements.each('entry/title') do |e|
+        puts "title:" + e.text
+      end
+      entry_info.doc.elements.each('entry/summary') do |e|
+        puts "summary: " + e.text
+        @summary = e.text
+      end
+      entry_info.doc.elements.each('entry/link') do |e|
+        if e.attributes['rel'] == 'alternate'
+          puts "href=" + e.attributes['href']
+          @alternate = e.attributes['href']
+        end
+      end
+      
+    end
+
   end
 
   class UploadEntry
@@ -75,6 +101,7 @@ module LDBlogWriter
     def initialize()
       @conf = Config.new(ConfigFile)
       check_config
+      puts "blog title:" + @conf.blog_title
       @plugin = Plugin.new(@conf)
       begin
         @edit_uri_h = YAML.load_file(@conf.edit_uri_file)
@@ -95,6 +122,7 @@ module LDBlogWriter
       category = ""
       title = ""
       src_text = ""
+      content = ""
       File.open(filename, "r") do |file|
         line = file.gets
         line.gsub!(/^<(.*)>\s+/) do |str|
@@ -110,18 +138,20 @@ module LDBlogWriter
         puts "title : #{title}"
         src_text = file.read
       end
+      entry = BlogEntry.new(@conf, title, category)
       if @conf.convert_to_html == true
-        content = Parser.new(@conf, @plugin).to_html(src_text)
+        content = Parser.new(@conf, @plugin).to_html(src_text, entry)
         if @conf.html_directory != nil
           save_html_file(@conf.html_directory, File.basename(filename), content)
         end
       else
         content = src_text
       end
+      entry.content = content
       if $DEBUG
-        puts category
-        puts title
-        puts content
+        puts entry.category
+        puts entry.title
+        puts entry.content
       end
       
       command = Command::new
@@ -130,10 +160,11 @@ module LDBlogWriter
         if dry_run == false
           edit_uri = command.post(@conf.post_uri, @conf.username,
                                   @conf.password,
-                                  title, category, content)
+                                  entry)
           puts "editURI : #{edit_uri}"
           if edit_uri != false
             save_edit_uri(filename, edit_uri)
+            entry.get_entry_info(edit_uri)
           end
         end
       else
@@ -141,11 +172,35 @@ module LDBlogWriter
         if dry_run == false
           edit_uri = @edit_uri_h[File.basename(filename)]
           command.edit(edit_uri, @conf.username, @conf.password,
-                       title, category, content)
+                       entry)
+          entry.get_entry_info(edit_uri)
         end
       end
       # save
+      if @conf.auto_trackback == true
+        entry.trackback_url_array.each do |trackback_url|
+          print "Send trackback to #{trackback_url} ? (y/n) "
+          ret = $stdin.gets.chomp
+          pp ret
+          if ret == "y" or ret == "Y" 
+            TrackBack.send(trackback_url, @conf.blog_title, entry.title,
+                           entry.summary, entry.alternate)
+          end
+        end
+      end
+    end
 
+
+    def check_blog_info
+      if @conf.atom_api_uri != nil
+        blog_info = Command.new.get(@conf.atom_api_uri + "/blog_id=" + @conf.blog_id,
+                                    @conf.username, @conf.password)
+        if blog_info != false
+          blog_info.doc.elements.each('feed/title') do |element|
+            @conf.blog_title = element.text
+          end
+        end
+      end
     end
 
     def check_config_api
@@ -198,6 +253,7 @@ module LDBlogWriter
         puts "check Atom APIs"
       end
       check_config_api
+      check_blog_info
     end
 
     def print_usage

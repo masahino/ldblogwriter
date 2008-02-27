@@ -68,6 +68,9 @@
      ((string-match "Password: " string)
       (setq input_str (read-string "Password: "))
       (process-send-string proc (concat input_str "\n")))
+     ((string-match "Send trackback to " string)
+      (setq input_str (string (read-char string)))
+      (process-send-string proc (concat input_str "\n")))
      )))
 
 

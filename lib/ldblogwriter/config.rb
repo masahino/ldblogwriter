@@ -7,9 +7,13 @@ module LDBlogWriter
     attr_accessor :plugin_dir
     attr_accessor :options
     attr_accessor :dry_run
+    attr_accessor :blog_title
+    attr_accessor :blog_id
+    attr_accessor :auto_trackback
 
     def initialize(filename)
       @options = Hash.new
+      @auto_trackback = false
       load(filename)
     end
 
