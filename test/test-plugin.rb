@@ -1,6 +1,8 @@
+$LOAD_PATH << '../lib'
+
 require 'test/unit'
-require 'config.rb'
-require 'plugin.rb'
+require 'ldblogwriter/config.rb'
+require 'ldblogwriter/plugin.rb'
 
 class TestPlugin < Test::Unit::TestCase
   def setup

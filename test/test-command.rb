@@ -1,6 +1,8 @@
+$LOAD_PATH << '../lib'
+
 require 'test/unit'
-require 'config.rb'
-require 'command.rb'
+require 'ldblogwriter/config.rb'
+require 'ldblogwriter/command.rb'
 
 
 module LDBlogWriter
