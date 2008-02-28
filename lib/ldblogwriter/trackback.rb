@@ -13,9 +13,14 @@ module LDBlogWriter
       req = "title=#{title}&" + "excerpt=#{excerpt}&" +
         "url=#{url}&" + "blog_name=#{blog_name}"
       req = URI.encode(req)
+      if $DEBUG
+        pp req
+      end
       Net::HTTP.start(uri.host, uri.port) do |http|
         res = http.post(uri.path, req)
-        puts res.body
+        if $DEBUG
+          puts res.body
+        end
       end
     end
   end

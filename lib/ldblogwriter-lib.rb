@@ -11,11 +11,12 @@ require 'ldblogwriter/config'
 require 'ldblogwriter/wsse'
 require 'ldblogwriter/plugin'
 require 'ldblogwriter/trackback'
+require 'ldblogwriter/entry'
 
 Net::HTTP.version_1_2
 
 module LDBlogWriter
-  VERSION = '0.0.1'
+  VERSION = '0.1.0'
 
   # ここからスタート
   class Blog
@@ -24,7 +25,9 @@ module LDBlogWriter
     def initialize()
       @conf = Config.new(ConfigFile)
       check_config
-      puts "blog title:" + @conf.blog_title
+      if $DEBUG
+        puts "blog title:" + @conf.blog_title
+      end
       @plugin = Plugin.new(@conf)
       begin
         @edit_uri_h = YAML.load_file(@conf.edit_uri_file)
@@ -84,7 +87,9 @@ module LDBlogWriter
           edit_uri = command.post(@conf.post_uri, @conf.username,
                                   @conf.password,
                                   entry)
-          puts "editURI : #{edit_uri}"
+          if $DEBUG
+            puts "editURI : #{edit_uri}"
+          end
           if edit_uri != false
             save_edit_uri(filename, edit_uri)
             entry.get_entry_info(edit_uri)
@@ -101,6 +106,7 @@ module LDBlogWriter
       end
       # save
       if @conf.auto_trackback == true
+        entry.trackback_url_array.uniq!
         entry.trackback_url_array.each do |trackback_url|
           print "Send trackback to #{trackback_url} ? (y/n) "
           ret = $stdin.gets.chomp
@@ -112,7 +118,6 @@ module LDBlogWriter
         end
       end
     end
-
 
     def check_blog_info
       if @conf.atom_api_uri != nil
@@ -222,7 +227,9 @@ module LDBlogWriter
       end
       # open
       filename.gsub!(/.txt$/, ".html")
-      puts "write html to #{filename}"
+      if $DEBUG
+        puts "write html to #{filename}"
+      end
       File.open(directory + "/" + filename, "w") do |file|
         file.write(text)
       end

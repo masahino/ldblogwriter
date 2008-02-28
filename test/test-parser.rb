@@ -81,6 +81,13 @@ class TestParser < Test::Unit::TestCase
     @parser.to_html("[[hoge:http://blog.livedoor.jp/masahino123/archives/64994357.html]]", entry)
     assert_equal(["http://app.blog.livedoor.jp/masahino123/tb.cgi/64994357"],
                  entry.trackback_url_array)
-    
   end
+
+  def test_parse_trackback
+    entry = LDBlogWriter::BlogEntry.new(@conf, "test", "category")
+    @parser.to_html("!trackback(http://app.blog.livedoor.jp/masahino123/tb.cgi/64994357)", entry)
+    assert_equal(["http://app.blog.livedoor.jp/masahino123/tb.cgi/64994357"],
+                 entry.trackback_url_array)
+  end
+    
 end

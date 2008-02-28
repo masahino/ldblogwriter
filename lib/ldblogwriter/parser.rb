@@ -38,6 +38,8 @@ module LDBlogWriter
         when /\A----/
           lines.shift
           buf.push '<hr />'
+        when /\A!trackback\(.*\)/
+          buf.push parse_trackback(lines.shift)
         when /\Aimg\(.*\)/
           buf.push parse_img(lines.shift)
         when /\A\s/
@@ -136,6 +138,14 @@ module LDBlogWriter
       return result
     end
 
+    def parse_trackback(line)
+      buf = []
+      line.scan(/\!trackback\((.*)\).*/) do |url|
+        @entry.trackback_url_array += url
+      end
+      return buf
+    end
+
     # TODO: plugin化
     def parse_img(line)
       buf = []
@@ -155,7 +165,7 @@ module LDBlogWriter
         rescue
           upload_uri_h = Hash.new
         end
-puts img_path
+
         if upload_uri_h[File.basename(img_path)] == nil
           # 新規アップロード
           com = Command.new

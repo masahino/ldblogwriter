@@ -31,15 +31,21 @@ module LDBlogWriter
     def get_entry_info(edit_uri)
       entry_info = Command.new.get(edit_uri, @conf.username, @conf.password)
       entry_info.doc.elements.each('entry/title') do |e|
-        puts "title:" + e.text
+        if $DEBUG
+          puts "title:" + e.text
+        end
       end
       entry_info.doc.elements.each('entry/summary') do |e|
-        puts "summary: " + e.text
+        if $DEBUG
+          puts "summary: " + e.text
+        end
         @summary = e.text
       end
       entry_info.doc.elements.each('entry/link') do |e|
         if e.attributes['rel'] == 'alternate'
-          puts "href=" + e.attributes['href']
+          if $DEBUG
+            puts "href=" + e.attributes['href']
+          end
           @alternate = e.attributes['href']
         end
       end

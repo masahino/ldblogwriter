@@ -23,7 +23,9 @@ module LDBlogWriter
     end
 
     def eval_src(src)
-      puts src
+      if $DEBUG
+        puts src
+      end
       begin
         eval(src, binding)
       rescue
