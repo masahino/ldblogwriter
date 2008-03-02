@@ -16,7 +16,7 @@ require 'ldblogwriter/entry'
 Net::HTTP.version_1_2
 
 module LDBlogWriter
-  VERSION = '0.1.0'
+  VERSION = '0.2.0'
 
   # ここからスタート
   class Blog
