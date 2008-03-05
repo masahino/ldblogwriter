@@ -2,7 +2,6 @@ require 'test/unit'
 require '../lib/ldblogwriter/config'
 require 'asin.rb'
 
-
 class TestAmazonECS < Test::Unit::TestCase
   def setup
     @config = LDBlogWriter::Config.new(ENV['HOME']+'/.ldblogwriter.conf')
