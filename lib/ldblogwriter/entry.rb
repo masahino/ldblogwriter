@@ -4,7 +4,7 @@ module LDBlogWriter
     attr_accessor :summary, :alternate
     attr_accessor :send_tb
     attr_accessor :trackback_url_array
-    def initialize(conf, title, category = nil, content = nil)
+    def initialize(conf, title, category = nil, content = "")
       @conf = conf
       @title = title
       @category = category

@@ -1,3 +1,4 @@
+require 'rexml/document'
 require 'uri'
 
 # trackbackを送るよ
@@ -18,10 +19,15 @@ module LDBlogWriter
       end
       Net::HTTP.start(uri.host, uri.port) do |http|
         res = http.post(uri.path, req)
+        doc = REXML::Document.new(res.body)
+        if doc.elements['response/error'].text != "0"
+          $stderr.puts doc.elements['response/message'].text
+        end
         if $DEBUG
           puts res.body
         end
       end
     end
+
   end
 end
