@@ -66,6 +66,7 @@ module LDBlogWriter
       end
       entry = BlogEntry.new(@conf, title, category)
       if @conf.convert_to_html == true
+        src_text = check_image_file(filename, src_text)
         content = Parser.new(@conf, @plugin).to_html(src_text, entry)
         if @conf.html_directory != nil
           save_html_file(@conf.html_directory, File.basename(filename), content)
@@ -117,6 +118,23 @@ module LDBlogWriter
           end
         end
       end
+    end
+
+    # ファイル名と同じ名前で拡張子が、"jpg"のファイルがあったら
+    # アップロードしてエントリーの先頭に入れる。
+    def check_image_file(filename, src_text)
+      img_filename = File::basename(filename, ".txt")+".jpg"
+      img_filename = File::dirname(filename) + "/" + img_filename
+      if $DEBUG
+        puts img_filename
+      end
+      if File::exist?(img_filename) == true
+        src_text = "img(#{img_filename})\n\n" + src_text
+      end
+      if $DEBUG
+        puts src_text
+      end
+      return src_text
     end
 
     def check_blog_info

@@ -158,6 +158,9 @@ module LDBlogWriter
       if img_title == nil
         img_title = File.basename(img_path)
       end
+      if $DEBUG
+        puts "parse_img: ima_path = #{img_path}"
+      end
       if File.exist?(img_path)
         # 既にupload済かどうかチェック
         begin
@@ -186,7 +189,8 @@ module LDBlogWriter
         end
         buf.push(get_img_html(img_uri, img_title))
         # アップロードデータ保存
-        
+      else
+        $stderr.puts "can't find image file(#{img_path})!"
       end
       return buf
     end
