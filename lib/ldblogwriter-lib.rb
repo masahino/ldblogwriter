@@ -5,6 +5,7 @@ require 'rexml/document'
 require 'pp'
 require 'uri'
 require 'yaml'
+require 'kconv'
 require 'ldblogwriter/parser'
 require 'ldblogwriter/command'
 require 'ldblogwriter/config'
@@ -51,6 +52,7 @@ module LDBlogWriter
       content = ""
       File.open(filename, "r") do |file|
         line = file.gets
+        line = Kconv::toutf8(line)
         line.gsub!(/^<(.*)>\s+/) do |str|
           category = $1
           if get_categories.include?(category)
@@ -63,6 +65,7 @@ module LDBlogWriter
         title = line
         puts "title : #{title}"
         src_text = file.read
+        src_text = Kconv::toutf8(src_text)
       end
       entry = BlogEntry.new(@conf, title, category)
       if @conf.convert_to_html == true
