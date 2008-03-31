@@ -5,9 +5,11 @@ require 'optparse'
 
 opt = OptionParser.new
 dry_run = false
+config_file = nil
 opt.on('-n') {|v| dry_run = v}
+opt.on('-f CONFIG_FILE') {|v| config_file = v}
 
 opt.parse!(ARGV)
 
-blog = LDBlogWriter::Blog.new()
+blog = LDBlogWriter::Blog.new(config_file)
 blog.post_entry(ARGV[0], dry_run)

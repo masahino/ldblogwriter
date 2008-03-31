@@ -11,5 +11,6 @@ class TestAmazonECS < Test::Unit::TestCase
 
   def test_item_lookup
     assert(@ecs.item_lookup('4101181764'))
+    assert(@ecs.item_lookup('406276007X'))
   end
 end

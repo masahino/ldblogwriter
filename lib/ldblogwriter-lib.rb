@@ -17,14 +17,20 @@ require 'ldblogwriter/entry'
 Net::HTTP.version_1_2
 
 module LDBlogWriter
-  VERSION = '0.2.0'
+  VERSION = '0.3.0'
+
+  GOOGLE_LOGIN_URL = 'https://www.google.com/accounts/ClientLogin'
 
   # ここからスタート
   class Blog
     ConfigFile = ENV['HOME'] + "/.ldblogwriter.conf"
 
-    def initialize()
-      @conf = Config.new(ConfigFile)
+    def initialize(config_file = nil)
+      if config_file == nil
+        @conf = Config.new(ConfigFile)
+      else
+        @conf = Config.new(config_file)
+      end
       check_config
       if $DEBUG
         puts "blog title:" + @conf.blog_title
