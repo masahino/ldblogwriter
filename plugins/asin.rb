@@ -23,11 +23,21 @@ class AmazonECS
       response = f.gets
       response = REXML::Document.new(response)
       item = response.elements['ItemLookupResponse/Items/Item']
-      item_h['DetailPageURL'] = item.elements['DetailPageURL'].get_text
-      item_h['MediumImageURL'] = item.elements['MediumImage/URL'].get_text
-      item_h['Title'] = item.elements['ItemAttributes/Title'].get_text
-      item_h['Author'] = item.elements['ItemAttributes/Author'].get_text
-      item_h['Manufacturer'] = item.elements['ItemAttributes/Manufacturer'].get_text
+      if item.elements['DetailPageURL'] != nil
+        item_h['DetailPageURL'] = item.elements['DetailPageURL'].get_text
+      end
+      if item.elements['MediumImage/URL'] != nil
+        item_h['MediumImageURL'] = item.elements['MediumImage/URL'].get_text
+      end
+      if item.elements['ItemAttributes/Title'] != nil
+        item_h['Title'] = item.elements['ItemAttributes/Title'].get_text
+      end
+      if item.elements['ItemAttributes/Author'] != nil
+        item_h['Author'] = item.elements['ItemAttributes/Author'].get_text
+      end
+      if item.elements['ItemAttributes/Manufacturer'] != nil
+        item_h['Manufacturer'] = item.elements['ItemAttributes/Manufacturer'].get_text
+      end
     end
     return item_h
   end
@@ -51,7 +61,9 @@ def asin(asin_str)
   result =  "<div class=\"amazon\">\n"
   result += "<div class=\"amazon-img\">\n"
   result += "<a href=\"#{item['DetailPageURL']}\">\n"
-  result += "<img src=\"#{item['MediumImageURL']}\" alt=\"#{item['Title']}\" /></a>\n"
+  if item['MediumImageURL'] != nil
+    result += "<img src=\"#{item['MediumImageURL']}\" alt=\"#{item['Title']}\" /></a>\n"
+  end
   result += "</div>\n"
   result += "『<a href=\"#{item['DetailPageURL']}\">#{item['Title']}</a>』<br />\n"
 #  if author != nil
