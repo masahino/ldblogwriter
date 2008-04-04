@@ -10,10 +10,15 @@ module LDBlogWriter
     attr_accessor :blog_title
     attr_accessor :blog_id
     attr_accessor :auto_trackback
+    attr_accessor :service
+    attr_accessor :auth_type
 
     def initialize(filename)
       @options = Hash.new
       @auto_trackback = false
+      @blog_title = ""
+      @service = 'livedoor'
+      @auth_type = 'wsse'
       load(filename)
     end
 

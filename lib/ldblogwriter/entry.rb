@@ -13,7 +13,7 @@ module LDBlogWriter
       @trackback_url_array = []
     end
     
-    def to_xml
+    def to_xml_livedoor
       data = "<entry xmlns=\"http://purl.org/atom/ns#\">\n"
       data += "<title xmlns=\"http://purl.org/atom/ns#\">#{@title}</title>\n"
       # カテゴリーは1つしか指定できないみたい
@@ -26,6 +26,33 @@ module LDBlogWriter
       data += "</content>\n"
       data += "</entry>\n"
       return data
+    end
+
+    def to_xml_blogger
+      data = "<entry xmlns='http://www.w3.org/2005/Atom'>\n"
+      data += "<title type='text'>#{@title}</title>\n"
+      data += "<content type='xhtml'>\n"
+      data += "<div xmlns=\"http://www.w3.org/1999/xhtml\">\n"
+      data += @content
+      data += "</div>\n"
+      data += "</content>\n"
+      data += "<author>\n"
+      data += "<name>#{@conf.username}</name>\n"
+      data += "<email>#{@conf.username}</email>\n"
+      data += "</author>\n"
+      data += "</entry>\n"
+      return data
+    end
+
+    def to_xml
+      case @conf.service
+      when 'livedoor'
+        to_xml_livedoor
+      when 'blogger'
+        to_xml_blogger
+      else
+        raise 'unkown service: #{@conf.service}'
+      end
     end
 
     def get_entry_info(edit_uri)

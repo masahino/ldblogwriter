@@ -85,12 +85,12 @@ module LDBlogWriter
       end
       entry.content = content
       if $DEBUG
-        puts entry.category
-        puts entry.title
-        puts entry.content
+        puts "category: " + entry.category
+        puts "title: " +entry.title
+        puts "contnt: " + entry.content
       end
       
-      command = Command::new
+      command = Command::new(@conf.auth_type)
       if @edit_uri_h[File.basename(filename)] == nil
         # post
         if dry_run == false
@@ -243,7 +243,9 @@ module LDBlogWriter
     def save_edit_uri(filename, edit_uri)
       filename = File.basename(filename)
       @edit_uri_h[filename] = edit_uri
-      YAML.dump(@edit_uri_h, File.open(@conf.edit_uri_file, 'w'))
+      if @conf.edit_uri_file != nil
+        YAML.dump(@edit_uri_h, File.open(@conf.edit_uri_file, 'w'))
+      end
     end
 
     def save_html_file(directory, filename, text)

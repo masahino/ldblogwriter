@@ -43,7 +43,8 @@ module LDBlogWriter
       when 'wsse'
         return {'X-WSSE' => Wsse::get(username, password)}
       when 'google'
-        return {'Authentication' => get_google_auth_token(username, password)}
+        return {'Authorization' => 'GoogleLogin auth='+
+          get_google_auth_token(username, password)}
       else
         raise ArgumentError, "unknwon auth type: #{@auth_type}"
       end
@@ -51,7 +52,6 @@ module LDBlogWriter
 
     def get(uri_str, username, password)
       uri = URI.parse(uri_str)
-      pp uri.path
       Net::HTTP.start(uri.host, uri.port) do |http|
         res = http.get(uri.path,
                        get_auth_info(username, password))
@@ -89,12 +89,18 @@ module LDBlogWriter
     end
 
     def post(uri_str, username, password, entry)
+      if $DEBUG
+        puts uri_str
+      end
       uri = URI.parse(uri_str)
       Net::HTTP.start(uri.host, uri.port) do |http|
 #        entry = BlogEntry.new(entry.title, entry.category, entry.content)
         data = entry.to_xml
+        if $DEBUG
+          puts data
+        end
         res = http.post(uri.path, data,
-                       get_auth_info(username, password))
+                        get_auth_info(username, password).update({'Content-Type' => 'application/atom+xml'}))
         case res.code
         when "201"
           edit_uri = res['Location']
@@ -105,6 +111,8 @@ module LDBlogWriter
           puts res.body
           edit_uri = false
         else
+          puts "return code: " + res.code
+          puts "response: " + res.body
           edit_uri = false
         end
 
