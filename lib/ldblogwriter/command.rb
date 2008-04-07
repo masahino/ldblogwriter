@@ -120,7 +120,7 @@ module LDBlogWriter
       end
     end
 
-    def edit(uri_str, user, pass, entry)
+    def edit(uri_str, username, password, entry)
       uri = URI.parse(uri_str)
       Net::HTTP.start(uri.host, uri.port) do |http|
 #        entry = BlogEntry.new(entry.title, entry.category, entry.content)
@@ -137,7 +137,7 @@ module LDBlogWriter
     end
 
     # delete blog entry
-    def delete(uri_str, user, pass)
+    def delete(uri_str, username, password)
       uri = URI.parse(uri_str)
       Net::HTTP.start(uri.host, uri.port) do |http|
         res = http.delete(uri.path, 

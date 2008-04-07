@@ -149,6 +149,10 @@ module LDBlogWriter
     # TODO: plugin化
     def parse_img(line)
       buf = []
+      # service == 'livedoor'のみ
+      if service != 'livedoor'
+        return buf
+      end
       img_str = ""
       if line =~ /\Aimg\((.*)\).*/
         img_str = $1
