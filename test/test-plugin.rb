@@ -14,4 +14,11 @@ class TestPlugin < Test::Unit::TestCase
     p @plugin.eval_src("hoge")
   end
 
+  def test_load_plugins
+  end
+
+  def test_load_plugin
+  end
+
+  
 end

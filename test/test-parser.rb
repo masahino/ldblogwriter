@@ -89,5 +89,22 @@ class TestParser < Test::Unit::TestCase
     assert_equal(["http://app.blog.livedoor.jp/masahino123/tb.cgi/64994357"],
                  entry.trackback_url_array)
   end
+
+  def test_syntax_highlight
     
+  end
+  
+  def test_parse_plugin
+  end
+
+  def test_get_img_html
+  end
+
+  def test_parse_p
+  end
+
+  def tet_a_href
+  end
+
+  
 end
