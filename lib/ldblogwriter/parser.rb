@@ -150,7 +150,7 @@ module LDBlogWriter
     def parse_img(line)
       buf = []
       # service == 'livedoor'のみ
-      if service != 'livedoor'
+      if @conf.service != 'livedoor'
         return buf
       end
       img_str = ""
