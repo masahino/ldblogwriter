@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #require 'amazon/search'
 #require 'net/http'
 require 'open-uri'
@@ -67,7 +68,9 @@ def asin(asin_str)
   result += "</div>\n"
   result += "『<a href=\"#{item['DetailPageURL']}\">#{item['Title']}</a>』<br />\n"
 #  if author != nil
+  if item['Author'] != nil
     result += "著者:#{item['Author']}<br />\n"
+  end
 #  elsif artist != nil
 #    result += "アーティスト:#{artist}<br />\n"
 #  end            

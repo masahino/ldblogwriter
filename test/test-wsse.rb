@@ -8,6 +8,8 @@ class TestWsse < Test::Unit::TestCase
   end
 
   def test_get
+    assert(LDBlogWriter::Wsse::get('user', 'pass'))
+    puts LDBlogWriter::Wsse::get('user', 'pass')
   end
 
 end

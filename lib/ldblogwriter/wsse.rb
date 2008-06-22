@@ -1,5 +1,4 @@
 require 'digest/sha1'
-require 'base64'
 require 'time'
 
 module LDBlogWriter
@@ -10,8 +9,8 @@ module LDBlogWriter
       passdigest = Digest::SHA1.digest(nonce + created + pass)
       
       credentials = "UsernameToken Username=\"#{user}\", " +
-        "PasswordDigest=\"#{Base64.encode64(passdigest).chomp}\", " + 
-        "Nonce=\"#{Base64.encode64(nonce).chomp}\", " +
+        "PasswordDigest=\"#{[passdigest].pack('m').chomp}\", " + 
+        "Nonce=\"#{[nonce].pack('m').chomp}\", " +
         "Created=\"#{created}\""
       
       return credentials
