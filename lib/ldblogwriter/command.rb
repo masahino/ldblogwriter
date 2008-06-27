@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 $LOAD_PATH << '../../lib' unless $LOAD_PATH.include? '..'
 
 require 'net/http'
@@ -22,19 +23,20 @@ module LDBlogWriter
       req.form_data = {'Email' => username,
         'Passwd' => password,
         'service' => 'blogger', 'source' => "lbw-#{VERSION}"}
-
       https = Net::HTTP.new(url.host, url.port)
       https.use_ssl = true
       https.verify_mode = OpenSSL::SSL::VERIFY_PEER
       store = OpenSSL::X509::Store.new
       store.set_default_paths
       https.cert_store = store
-      https.start {
+      https.start do
         res = https.request(req)
         if res.body =~ /Auth=(.+)/
           return $1
+        else
+          puts res.body
         end
-      }
+      end
       return nil
     end
 
