@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 module LDBlogWriter
   class BlogEntry
     attr_accessor :title, :category, :content
@@ -15,14 +16,14 @@ module LDBlogWriter
     
     def to_xml_livedoor
       data = "<entry xmlns=\"http://purl.org/atom/ns#\">\n"
-      data += "<title xmlns=\"http://purl.org/atom/ns#\">#{@title}</title>\n"
+      data += "<title xmlns=\"http://purl.org/atom/ns#\">#{@title.chomp}</title>\n"
       # カテゴリーは1つしか指定できないみたい
       #    categories.each do |category|
       #      data += "<subject xmlns=\"http://purl.org/dc/elements/1.1/\">#{category}</subject>\n"
       #    end
-      data += "<subject xmlns=\"http://purl.org/dc/elements/1.1/\">#{@category}</subject>\n"
+      data += "<subject xmlns=\"http://purl.org/dc/elements/1.1/\">#{@category.chomp}</subject>\n"
       data += "<content xmlns=\"http://purl.org/atom/ns#\" mode=\"base64\">"
-      data += [@content].pack("m")
+      data += [@content].pack("m").chomp
       data += "</content>\n"
       data += "</entry>\n"
       return data
