@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'rexml/document'
 
 module LDBlogWriter
@@ -7,6 +8,9 @@ module LDBlogWriter
 
     def initialize(source)
       @source = source
+      if @source.respond_to?('force_encoding')
+        @source.force_encoding('UTF-8')
+      end
       @doc = REXML::Document.new(source)
     end
 
