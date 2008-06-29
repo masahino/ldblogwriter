@@ -260,11 +260,11 @@ module LDBlogWriter
         Dir.mkdir(directory)
       end
       # open
-      filename.gsub!(/.txt$/, ".html")
+      html_filename = filename.gsub(/.txt$/, ".html")
       if $DEBUG
-        puts "write html to #{filename}"
+        puts "write html to #{html_filename}"
       end
-      File.open(directory + "/" + filename, "w") do |file|
+      File.open(directory + "/" + html_filename, "w") do |file|
         file.write(text)
       end
     end
@@ -281,7 +281,7 @@ if defined?($test) && $test
 
   class TestBlog < Test::Unit::TestCase
     def test_check_config
-      blog = LDBlogWriter::Blog.new('ldblogwriter-lib.rb')
+      blog = LDBlogWriter::Blog.new()
     end
   end
 end
