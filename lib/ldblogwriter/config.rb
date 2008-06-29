@@ -13,13 +13,16 @@ module LDBlogWriter
     attr_accessor :service
     attr_accessor :auth_type
 
-    def initialize(filename)
+    def initialize(filename = nil)
       @options = Hash.new
       @auto_trackback = false
       @blog_title = ""
       @service = 'livedoor'
       @auth_type = 'wsse'
-      load(filename)
+      if filename != nil
+        puts filename
+        load(filename)
+      end
     end
 
     def load(filename)
