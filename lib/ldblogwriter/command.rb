@@ -4,7 +4,6 @@ $LOAD_PATH << '../../lib' unless $LOAD_PATH.include? '..'
 require 'net/http'
 require 'net/https'
 require 'uri'
-require 'ldblogwriter-lib'
 require 'ldblogwriter/wsse'
 require 'ldblogwriter/atom_response'
 
