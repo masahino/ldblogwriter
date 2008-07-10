@@ -1,7 +1,7 @@
 #! /opt/local/bin/ruby
 # -*- coding: utf-8 -*-
 
-require 'ldblogwriter-lib'
+require 'ldblogwriter'
 require 'optparse'
 
 opt = OptionParser.new

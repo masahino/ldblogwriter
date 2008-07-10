@@ -1,4 +1,4 @@
-require 'ldblogwriter-lib'
+require 'ldblogwriter'
 
 blog = LDBlogWriter::Blog.new()
 

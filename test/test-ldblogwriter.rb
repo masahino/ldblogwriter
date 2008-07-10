@@ -1,7 +1,7 @@
 $LOAD_PATH.unshift '../lib'
 
 require 'test/unit'
-require 'ldblogwriter-lib.rb'
+require 'ldblogwriter.rb'
 
 class TestLDBlogWriter < Test::Unit::TestCase
   def setup
