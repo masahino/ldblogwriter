@@ -15,6 +15,7 @@ def add_bookscope(asin)
     require 'mechanize'
   rescue LoadError
     "<!-- mechanizeが無い -->\n"
+    return
   end
   email = @conf.options['bookscope_email']
   user_name = @conf.options['bookscope_name']
@@ -22,14 +23,15 @@ def add_bookscope(asin)
   if user_name == nil
     "<!-- ユーザIDが設定されていません -->\n"
   end
-
   agent = WWW::Mechanize.new
-  agent.post("http://bookscope.net/account/login", 'email' => email,
-             'password' => password)
+  ret = agent.post("http://bookscope.net/account/login", 'email' => email,
+                   'password' => password)
+  #  $stderr.puts ret.body
   bookscope_uri = "http://bookscope.net/#{user_name}/belongings/create?barcode=#{asin}"
   $stderr.puts bookscope_uri
-  puts bookscope_uri
-  agent.get(bookscope_uri)
+  #  puts bookscope_uri
+  ret = agent.get(bookscope_uri).body
+  return ""
 end
 
 
