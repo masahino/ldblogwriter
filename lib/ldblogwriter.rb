@@ -128,6 +128,9 @@ module LDBlogWriter
           end
         end
       end
+
+      # post process
+      @plugin.eval_post
     end
 
     # ファイル名と同じ名前で拡張子が、"jpg"のファイルがあったら

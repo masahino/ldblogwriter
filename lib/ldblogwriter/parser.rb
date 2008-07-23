@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'open-uri'
 require 'pp'
 require 'ldblogwriter/command'
@@ -115,7 +116,14 @@ module LDBlogWriter
     end
     
     def parse_plugin(line)
-      @plugin.eval_src(line.gsub(/\A#/, ""))
+      eval_string = line.gsub(/\A#/, "")
+      # regist post process action
+      post_method_name = eval_string[/\A\w+/]+"_post"
+      if @plugin.respond_to?(post_method_name)
+        @plugin.post_process_list.push(eval_string.gsub(/\A(\w+)/) { $1+"_post" })
+      end
+      
+      @plugin.eval_src(eval_string)
     end
 
     def get_small_img_uri(img_uri)

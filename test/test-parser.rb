@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 $LOAD_PATH.unshift '../lib'
 
 require 'test/unit'
@@ -95,6 +96,7 @@ class TestParser < Test::Unit::TestCase
   end
   
   def test_parse_plugin
+    
   end
 
   def test_get_img_html
