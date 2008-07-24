@@ -18,7 +18,7 @@ require 'ldblogwriter/entry'
 Net::HTTP.version_1_2
 
 module LDBlogWriter
-  VERSION = '0.3.0'
+  VERSION = '0.3.1'
 
   GOOGLE_LOGIN_URL = 'https://www.google.com/accounts/ClientLogin'
 
