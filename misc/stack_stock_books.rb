@@ -48,7 +48,11 @@ module StackStockBooks
       edit_uri = "#{StackHomeURI}/book/#{isbn}/notes/edit"
       edit_page = @agent.get(edit_uri)
       update_form = edit_page.forms.with.action(/update$/).first
-      update_form['stock[note]'] = notes_text
+      if update_form['stock[note]'] != nil
+        update_form['stock[note]'] = update_form['stock[note]'] + "\n" + notes_text
+      else
+        update_form['stock[note]'] = notes_text
+      end
       ret = update_form.submit
     end
   end
@@ -70,7 +74,7 @@ module StackStockBooks
       book_info = {'asin' => asin,
         'date' => date_str,
         'state' => state_str,
-        'public' = public_flag}
+        'public' => public_flag}
       Net::HTTP.start(uri.host, uri.port) do |http|
         response = http.post(uri.path, "request=#{URI.encode(book_info.to_yaml)}")
         #puts YAML.load(decode(response.body))

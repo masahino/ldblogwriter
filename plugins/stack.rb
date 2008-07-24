@@ -30,6 +30,19 @@ def stack(asin, state)
   ""
 end
 
+def stack_post(asin, state)
+  require 'stack_stock_books'
+
+  user = @conf.options['stack_id']
+  op_server = @conf.options['stack_op_server']
+  op_id = @conf.options['stack_op_id']
+  op_password = @conf.options['stack_op_password']
+  
+  stack = StackStockBooks::Agent.new(user, op_server, op_id, op_password)
+  
+  stack.edit_note(asin, @entry.alternate)
+end
+
 if $0 == __FILE__
   $test = true
 end

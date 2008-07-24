@@ -37,7 +37,8 @@ module LDBlogWriter
       end
     end
 
-    def eval_post
+    def eval_post(entry)
+      @entry = entry # FIXME
       @post_process_list.each do |post_process|
         eval_src(post_process)
       end
