@@ -31,13 +31,13 @@ module Booklog
 
     def comment(asin, comment)
       update_uri = BooklogHomeURI + '/addbook.php?mode=ItemLookup&asin='+asin
-      p update_uri
+      #p update_uri
       comment_page = @agent.get(update_uri)
       comment_form = comment_page.form('frm')
       comment_form['comment'] = comment.toeuc
       puts comment_form['comment']
       result_page = comment_form.submit
-      puts result_page.body
+      #puts result_page.body
     end
   end
 end
