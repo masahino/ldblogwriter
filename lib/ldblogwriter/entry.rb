@@ -45,12 +45,26 @@ module LDBlogWriter
       return data
     end
 
+    def to_xml_hatena
+      data = "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+      data += "<entry xmlns=\"http://purl.org/atom/ns#\">\n"
+      data += "<title>#{@title.chomp}</title>\n"
+      data += "<content type=\"text/plain\">\n"
+      data += content
+      data += "</content>\n"
+      data += "</entry>\n"
+      return data
+    end
+      
+
     def to_xml
       case @conf.service
       when 'livedoor'
         to_xml_livedoor
       when 'blogger'
         to_xml_blogger
+      when 'hatena'
+        to_xml_hatena
       else
         raise 'unkown service: #{@conf.service}'
       end
