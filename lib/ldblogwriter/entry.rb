@@ -5,6 +5,7 @@ module LDBlogWriter
     attr_accessor :summary, :alternate
     attr_accessor :send_tb
     attr_accessor :trackback_url_array
+    attr_accessor :edit_uri
     def initialize(conf, title, category = nil, content = "")
       @conf = conf
       @title = title
@@ -71,6 +72,7 @@ module LDBlogWriter
     end
 
     def get_entry_info(edit_uri)
+      @edit_uri = edit_uri
       entry_info = Command.new.get(edit_uri, @conf.username, @conf.password)
       entry_info.doc.elements.each('entry/title') do |e|
         if $DEBUG
