@@ -7,6 +7,7 @@ def tag_post(tag_str)
   when 'livedoor'
     require 'rubygems'
     require 'mechanize'
+    require 'kconv'
     
     blog_id = @conf.blog_id
     entry_id = @entry.edit_uri.split("=").last
@@ -25,7 +26,7 @@ def tag_post(tag_str)
     page = agent.get(edit_uri)
     edit_form = page.forms.with.name('ArticleForm').first
     puts edit_form
-    edit_form['tag'] = tag_str
+    edit_form['tag'] = tag_str.toeuc
     edit_form.submit(edit_form.buttons.with.name('.save').first)
   else
   end
