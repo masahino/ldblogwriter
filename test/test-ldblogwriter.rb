@@ -19,6 +19,6 @@ class TestLDBlogWriter < Test::Unit::TestCase
     assert_equal("hogehoge", blog.check_image_file("nofile.txt", "hogehoge"))
 
     assert_equal("img(../test/test2.png)\n\nhogehoge", blog.check_image_file("../test/test2.txt", "hogehoge"))
-    assert_equal("img(./test2.jpg)\n\nhogehoge", blog.check_image_file("test2.txt", "hogehoge"))
+    assert_equal("img(./test2.png)\n\nhogehoge", blog.check_image_file("test2.txt", "hogehoge"))
   end
 end

@@ -14,21 +14,22 @@ def add_bookscope(asin)
   begin
     require 'mechanize'
   rescue LoadError
-    "<!-- mechanizeが無い -->\n"
-    return
+    return "<!-- mechanizeが無い -->\n"
   end
   email = @conf.options['bookscope_email']
   user_name = @conf.options['bookscope_name']
   password = @conf.options['bookscope_password']
   if user_name == nil
-    "<!-- ユーザIDが設定されていません -->\n"
+    return "<!-- ユーザIDが設定されていません -->\n"
   end
   agent = WWW::Mechanize.new
   ret = agent.post("http://bookscope.net/account/login", 'email' => email,
                    'password' => password)
   #  $stderr.puts ret.body
   bookscope_uri = "http://bookscope.net/#{user_name}/belongings/create?barcode=#{asin}"
-  $stderr.puts bookscope_uri
+  if $DEBuG
+    $stderr.puts bookscope_uri
+  end
   #  puts bookscope_uri
   ret = agent.get(bookscope_uri).body
   return ""
@@ -46,7 +47,6 @@ if defined?($test) && $test
   class TestAddBookScope < Test::Unit::TestCase
     def setup
       @conf = LDBlogWriter::Config.new()
-      @conf.options['bookscope_name'] = 'testid'
     end
 
     def test_no_userid
@@ -54,6 +54,7 @@ if defined?($test) && $test
     end
 
     def test_add_bookscope
+      @conf.options['bookscope_name'] = 'testid'
       assert_equal("<!-- BookScopeに登録しました -->\n", add_bookscope('1'))
     end
   end

@@ -18,7 +18,7 @@ if defined?($test) && $test
     end
 
     def test_google
-      assert_equal(%Q!<script type="text/javascript" src="http://www.nicovideo.jp/thumb_watch/sm281634?w=485&h=385"></script>\n!, niconico("sm281634"))
+      assert_equal(%Q!<script type="text/javascript" src="http://www.nicovideo.jp/thumb_watch/sm281634?w=485&h=385" charset="utf-8"></script>\n!, niconico("sm281634"))
     end
   end
 end

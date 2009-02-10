@@ -35,7 +35,9 @@ module Booklog
       comment_page = @agent.get(update_uri)
       comment_form = comment_page.form('frm')
       comment_form['comment'] = comment.toeuc
-      puts comment_form['comment']
+      if $DEBUG
+        puts comment_form['comment']
+      end
       result_page = comment_form.submit
       #puts result_page.body
     end

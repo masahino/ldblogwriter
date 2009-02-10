@@ -25,7 +25,9 @@ def stack(asin, state)
   Net::HTTP.start(uri.host, uri.port) do |http|
     response = http.post(uri.path, "request=#{URI.encode([book_info].to_yaml)}")
     # error処理
-    p response.body
+    if $DEBUG
+      p response.body
+    end
   end
   ""
 end
