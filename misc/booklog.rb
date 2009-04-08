@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require 'rubygems'
+require 'pp'
 module Booklog
   class Agent
     require 'mechanize'
@@ -10,14 +11,17 @@ module Booklog
     BooklogInputURI = 'http://booklog.jp/input.php'
     def initialize(user_id, password)
       @agent = WWW::Mechanize.new
+      @agent.post_connect_hooks << lambda{|params| params[:response_body] = NKF.nkf('-w8m0', params[:response_body])}
+
       authentication(@agent, user_id, password)
     end
 
     def authentication(agent, user_id, password)
       login_page = agent.get(BooklogLoginURI)
-      login_form = login_page.forms.with.action("./uhome.php").first
-      login_form['account'] = user_id
-      login_form['pw'] = password
+#      login_form = login_page.forms.with.action("./uhome.php").first
+      login_form = login_page.form_with(:name => 'frm')
+      login_form.account = user_id
+      login_form.pw = password
       result_page = login_form.submit
     end
 
@@ -44,3 +48,24 @@ module Booklog
   end
 end
 
+if $0 == __FILE__
+  $test = true
+end
+
+if defined?($test) && $test
+  require 'test/unit'
+  require 'ldblogwriter'
+
+  class TestBooklog < Test::Unit::TestCase
+    def setup
+      # login idとpasswordを代入
+      lbw = LDBlogWriter::Blog.new
+      @config = LDBlogWriter::Config.new(ENV['HOME'] + "/.ldblogwriter.conf")
+    end
+
+    def test_authentication
+      Booklog::Agent.new(@config.options['booklog_userig'], @config.options['booklog_password'])
+    end
+
+  end
+end

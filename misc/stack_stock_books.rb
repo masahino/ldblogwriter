@@ -32,7 +32,8 @@ module StackStockBooks
     end
     # 認証するよ
     def authentication(agent, op_server, op_id, op_password)
-      login_form = agent.get(StackHomeURI).forms.with.action("/auth/login").first
+#      login_form = agent.get(StackHomeURI).forms.with.action("/auth/login").first
+      login_form = agent.get(StackHomeURI).forms.first
       login_form['name'] = @stack_id
       op_page = login_form.submit
       case op_server
@@ -79,6 +80,25 @@ module StackStockBooks
         response = http.post(uri.path, "request=#{URI.encode(book_info.to_yaml)}")
         #puts YAML.load(decode(response.body))
       end
+    end
+  end
+end
+
+if defined?($test) && $test
+  require 'test/unit'
+  require 'ldblogwriter'
+
+  class TestStackStockBooks < Test::Unit::TestCase
+    def setup
+      # login idとpasswordを代入
+      @config = LDBlogWriter::Config.new(ENV['HOME'] + "/.ldblogwriter.conf")
+    end
+
+    def test_authentication
+      StackStockBooks::Agent.new(@config.options['stack_id'],
+                                 @config.options['stack_op_server'],
+                                 @config.options['stack_op_id'],
+                                 @config.options['stack_op_password'])
     end
   end
 end
