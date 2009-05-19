@@ -4,21 +4,61 @@
 require 'open-uri'
 require 'pp'
 require 'rexml/document'
+require 'time'
+require 'openssl'
+require 'base64'
 
 #Net::HTTP.version_1_2
 
 class AmazonECS
 
-  SERVICE_URL = 'http://webservices.amazon.co.jp/onca/xml?Service=AWSECommerceService'
+  SERVER_NAME = 'webservices.amazon.co.jp'
+  SERVICE_URL = 'http://webservices.amazon.co.jp/onca/xml?' #Service=AWSECommerceService'
   def initialize(arg_hash)
-    @subscription_id = arg_hash['subscription_id']
-    @associate_tag = arg_hash['associate_tag']
-    @base_url = SERVICE_URL + "&SubscriptionId=#{@subscription_id}&AssociateTag=#{@associate_tag}"
+
+#    @subscription_id = arg_hash['subscription_id']
+    @access_key_id = arg_hash['access_key_id']
+    @secret_access_key = arg_hash['secret_key_id']
+#    @associate_tag = arg_hash['associate_tag']
+#    @base_url = SERVICE_URL + "&SubscriptionId=#{@subscription_id}&AssociateTag=#{@associate_tag}"
+#    @base_url = SERVICE_URL + "&SubscriptionId=#{@subscription_id}&AssociateTag=#{@associate_tag}"
+  end
+
+  def RFC3986_escape(str)
+    # RFC3986
+    safe_char = Regexp.new(/[A-Za-z0-9\-_.~]/)
+    encoded = ""
+    str.each_byte do|chr|
+      if safe_char =~ chr.chr
+        encoded = encoded + chr.chr
+      else
+        encoded = encoded + "%" + chr.chr.unpack("H*")[0].upcase
+      end
+    end
+    return encoded
+  end
+  
+  def get_signature(request_str)
+    message = ["GET", SERVER_NAME, "/onca/xml", request_str].join("\n")
+    hash = OpenSSL::HMAC::digest(OpenSSL::Digest::SHA256.new, @secret_access_key, message)
+
+    return RFC3986_escape(Base64.encode64(hash).chomp)
   end
   
   def item_lookup(asin)
-    uri = @base_url + "&Operation=ItemLookup" + "&ResponseGroup=Small,Images" +
-      "&IdType=ASIN&ItemId=#{asin}"
+#    uri = @base_url + "&Operation=ItemLookup" + "&ResponseGroup=Small,Images" +
+#      "&IdType=ASIN&ItemId=#{asin}"
+    timestamp = Time.now.iso8601
+    request_str = "Service=AWSECommeerceService" +
+      "&AWSAccessKeyId=#{@access_key_id}" +
+      "&Operation=ItemLookup" + "&ResponseGroup=Small,Images" +
+      "&IdType=ASIN&ItemId=#{asin}" +
+      "&Timestamp=#{timestamp}" +
+      "&Version=2009-01-06"
+    request_str = request_str.split("&").sort.join("&")
+    signature = get_signature(request_str)
+    request_str += "&Sigature="+signature
+    uri = SERVICE_URL+request_str
     item_h = Hash.new
     open(uri) do |f|
       response = f.gets
@@ -47,14 +87,14 @@ end
 # amazonのasinを指定して、その商品へのリンクを作成するプラグイン
 # #asin(<ASIN>)
 def asin(asin_str)
-  sub_id = @conf.options['amazon_sub_id']
-  assoc_id = @conf.options['amazon_assoc_id']
-  if sub_id == nil or assoc_id == nil
+  access_key_id = @conf.options['amazon_access_key_id']
+  secret_key_id = @conf.options['amazon_secret_key_id']
+  if access_key_id == nil or secret_key_id == nil
     return
   end
 #  cache_dir = ENV['HOME'] + "/.amazon_cache"
-  ecs = AmazonECS.new('subscription_id' => sub_id,
-                      'associate_tag' => assoc_id)
+  ecs = AmazonECS.new('access_key_id' => access_key_id,
+                      'secret_key_id' => secret_key_id)
   item = ecs.item_lookup(asin_str)
   image_url_large = image_url_medium = nil
  
@@ -88,10 +128,25 @@ end
 
 if defined?($test) && $test
   require 'test/unit'
+  require '../lib/ldblogwriter/config'
 
   class TestAsin < Test::Unit::TestCase
     def setup
+      @config = LDBlogWriter::Config.new(ENV['HOME']+'/.ldblogwriter.conf')
+      @ecs = AmazonECS.new('access_key_id' => @config.options['amazon_access_key_id'],
+                           'secret_key_id' => @config.options['amazon_secret_key_id'])
     end
 
+    def test_get_signature
+      request_str = "AWSAccessKeyId=00000000000000000000&ItemId=0679722769&Operation=ItemLookup&ResponseGroup=ItemAttributes%2COffers%2CImages%2CReviews&Service=AWSECommerceService&Timestamp=2009-01-01T12%3A00%3A00Z&Version=2009-01-06"
+      ecs = AmazonECS.new({'access_key_id' => "00000000000000000000",
+                            'secret_key_id' => "1234567890"})
+      p ecs.get_signature(request_str)
+    end
+    
+    def test_item_lookup
+      assert(@ecs.item_lookup('4101181764'))
+      #assert(@ecs.item_lookup('406276007X'))      
+    end
   end
 end
