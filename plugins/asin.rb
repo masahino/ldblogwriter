@@ -38,30 +38,43 @@ class AmazonECS
     return encoded
   end
   
-  def get_signature(request_str)
-    message = ["GET", SERVER_NAME, "/onca/xml", request_str].join("\n")
+  def get_signature(request_str, server = nil)
+    if server == nil
+      server = SERVER_NAME
+    end
+    message = ["GET", server, "/onca/xml", request_str].join("\n")
     hash = OpenSSL::HMAC::digest(OpenSSL::Digest::SHA256.new, @secret_access_key, message)
-
     return RFC3986_escape(Base64.encode64(hash).chomp)
   end
   
   def item_lookup(asin)
 #    uri = @base_url + "&Operation=ItemLookup" + "&ResponseGroup=Small,Images" +
 #      "&IdType=ASIN&ItemId=#{asin}"
-    timestamp = Time.now.iso8601
+    timestamp = RFC3986_escape(Time.now.iso8601)
     request_str = "Service=AWSECommeerceService" +
       "&AWSAccessKeyId=#{@access_key_id}" +
-      "&Operation=ItemLookup" + "&ResponseGroup=Small,Images" +
+      "&Operation=ItemLookup" + 
+      "&ResponseGroup=" + RFC3986_escape("Small,Images") +
       "&IdType=ASIN&ItemId=#{asin}" +
       "&Timestamp=#{timestamp}" +
       "&Version=2009-01-06"
+#    request_str = RFC3986_escape(request_str)
     request_str = request_str.split("&").sort.join("&")
     signature = get_signature(request_str)
-    request_str += "&Sigature="+signature
+    request_str += "&Signature="+signature
+
+  puts request_str
+
     uri = SERVICE_URL+request_str
+
+puts uri
+
     item_h = Hash.new
     open(uri) do |f|
       response = f.gets
+
+  pp response
+
       response = REXML::Document.new(response)
       item = response.elements['ItemLookupResponse/Items/Item']
       if item.elements['DetailPageURL'] != nil
@@ -141,7 +154,8 @@ if defined?($test) && $test
       request_str = "AWSAccessKeyId=00000000000000000000&ItemId=0679722769&Operation=ItemLookup&ResponseGroup=ItemAttributes%2COffers%2CImages%2CReviews&Service=AWSECommerceService&Timestamp=2009-01-01T12%3A00%3A00Z&Version=2009-01-06"
       ecs = AmazonECS.new({'access_key_id' => "00000000000000000000",
                             'secret_key_id' => "1234567890"})
-      p ecs.get_signature(request_str)
+      assert_equal('Nace%2BU3Az4OhN7tISqgs1vdLBHBEijWcBeCqL5xN9xg%',
+             ecs.get_signature(request_str, 'webservices.amazon.com'))
     end
     
     def test_item_lookup
