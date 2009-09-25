@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 module LDBlogWriter
   class Plugin
     attr_accessor :post_process_list

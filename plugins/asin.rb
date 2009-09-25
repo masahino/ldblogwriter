@@ -63,17 +63,11 @@ class AmazonECS
     signature = get_signature(request_str)
     request_str += "&Signature="+signature
 
-  puts request_str
-
     uri = SERVICE_URL+request_str
-
-puts uri
 
     item_h = Hash.new
     open(uri) do |f|
       response = f.gets
-
-  pp response
 
       response = REXML::Document.new(response)
       item = response.elements['ItemLookupResponse/Items/Item']
