@@ -53,6 +53,9 @@ module LDBlogWriter
 
     def get(uri_str, username, password)
       uri = URI.parse(uri_str)
+if $DEBUG
+  puts "XXXXX" + uri_str
+end
       Net::HTTP.start(uri.host, uri.port) do |http|
         res = http.get(uri.path,
                        get_auth_info(username, password))

@@ -176,6 +176,7 @@ module LDBlogWriter
             case element.attributes['rel']
             when 'service.post'
               if @conf.post_uri == nil
+                puts "!!!!!set  post uri"
                 @conf.post_uri = element.attributes['href']
               end
             when 'service.feed'
@@ -216,7 +217,10 @@ module LDBlogWriter
         puts "check Atom APIs"
       end
       check_config_api
-      check_blog_info
+#      check_blog_info
+if $DEBUG
+  pp @conf
+end
     end
 
     def print_usage
@@ -235,11 +239,13 @@ module LDBlogWriter
     end
 
     def get_categories
-      com = Command.new
-      ret = com.get(@conf.categories_uri, @conf.username, @conf.password)
       categories = Array.new
-      ret.doc.elements.each('categories/subject') do |category|
-        categories.push(category.text)
+      com = Command.new
+      if @conf.categories_uri != nil
+        ret = com.get(@conf.categories_uri, @conf.username, @conf.password)
+        ret.doc.elements.each('categories/subject') do |category|
+          categories.push(category.text)
+        end
       end
       return categories
     end

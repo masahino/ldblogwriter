@@ -14,8 +14,47 @@ module LDBlogWriter
       @send_tb = false
       @trackback_url_array = []
     end
-    
+
     def to_xml_livedoor
+
+      data = <<EOF
+<?xml version="1.0" encoding="utf-8"?>
+<entry xmlns="http://www.w3.org/2005/Atom"
+    xmlns:app="http://www.w3.org/2007/app"
+    xmlns:blogcms="http://blogcms.jp/-/atom">
+EOF
+      data += "<title>#{@title.chomp}</title>\n"
+
+# #    <link rel="alternate" type="text/html" 
+#        href="http://blog.livedoor.jp/staff/archives/000000.html" />
+#     <link rel="edit" type="application/atom+xml;type=entry" 
+#        href="http://livedoor.blogcms.jp/blog/staff/article/000000" title="Article Title" />
+#     <id>tag:example.org,2003:3.2397</id>
+#     <updated>2009-07-28T00:00:00+0900</updated>
+#     <published>2009-07-28T00:00:00+0900</published>
+#     <author><name>staff</name></author>
+
+      data += "<content type=\"text/html\" xml:lang=\"ja\">\n"
+#      data += [@content].pack("m").chomp
+      data += @content
+      data += "</content>\n"
+
+      data += "<category scheme=\"http://livedoor.blogcms.jp/atom/blog/masahino123/category\" term=\"#{@category.chomp}\"/>\n"
+
+#     <blogcms:source>
+#         <blogcms:body><![CDATA[<p>記事本文</p>]]></blogcms:body>
+#         <blogcms:more><![CDATA[<p>記事追記部分</p>]]></blogcms:more>
+#         <blogcms:private><![CDATA[<p>記事プライベート部分</p>]]></blogcms:private>
+#     </blogcms:source>
+#     <app:control>
+#         <app:draft>yes</app:draft>
+#     </app:control>
+
+      data += "</entry>\n"
+      return data
+    end
+    
+    def to_xml_livedoor_old
       data = "<entry xmlns=\"http://purl.org/atom/ns#\">\n"
       data += "<title xmlns=\"http://purl.org/atom/ns#\">#{@title.chomp}</title>\n"
       # カテゴリーは1つしか指定できないみたい
