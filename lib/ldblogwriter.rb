@@ -7,6 +7,7 @@ require 'pp'
 require 'uri'
 require 'yaml'
 require 'kconv'
+
 require 'ldblogwriter/parser'
 require 'ldblogwriter/command'
 require 'ldblogwriter/config'
@@ -14,11 +15,12 @@ require 'ldblogwriter/wsse'
 require 'ldblogwriter/plugin'
 require 'ldblogwriter/trackback'
 require 'ldblogwriter/entry'
+require 'ldblogwriter/service_builder.rb'
 
 Net::HTTP.version_1_2
 
 module LDBlogWriter
-  VERSION = '0.3.1'
+  VERSION = '0.4.1'
 
   GOOGLE_LOGIN_URL = 'https://www.google.com/accounts/ClientLogin'
 
@@ -32,6 +34,7 @@ module LDBlogWriter
       else
         @conf = Config.new(config_file)
       end
+      @service = ServiceBuilder::get_service(@conf)
       check_config
       if $DEBUG
         puts "blog title:" + @conf.blog_title
@@ -77,7 +80,7 @@ module LDBlogWriter
       entry = BlogEntry.new(@conf, title, category)
       if @conf.convert_to_html == true
         src_text = check_image_file(filename, src_text)
-        content = Parser.new(@conf, @plugin).to_html(src_text, entry)
+        content = Parser.new(@conf, @plugin, @service).to_html(src_text, entry)
         if @conf.html_directory != nil
           save_html_file(@conf.html_directory, File.basename(filename), content)
         end
@@ -95,9 +98,10 @@ module LDBlogWriter
       if @edit_uri_h[File.basename(filename)] == nil
         # post
         if dry_run == false
-          edit_uri = command.post(@conf.post_uri, @conf.username,
-                                  @conf.password,
-                                  entry)
+#          edit_uri = command.post(@conf.post_uri, @conf.username,
+#                                  @conf.password,
+#                                  entry)
+          edit_uri = @service.post_entry(entry.content, entry.title, entry.category)
           if $DEBUG
             puts "editURI : #{edit_uri}"
           end

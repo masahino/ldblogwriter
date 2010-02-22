@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+require 'cgi'
+
 module LDBlogWriter
   class BlogEntry
     attr_accessor :title, :category, :content
@@ -36,7 +39,7 @@ EOF
 
       data += "<content type=\"text/html\" xml:lang=\"ja\">\n"
 #      data += [@content].pack("m").chomp
-      data += @content
+      data += CGI::escapeHTML(@content)
       data += "</content>\n"
 
       data += "<category scheme=\"http://livedoor.blogcms.jp/atom/blog/masahino123/category\" term=\"#{@category.chomp}\"/>\n"

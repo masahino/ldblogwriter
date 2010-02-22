@@ -14,9 +14,10 @@ require 'yaml'
 module LDBlogWriter
 
   class Parser
-    def initialize(conf, plugin)
+    def initialize(conf, plugin, service = nil)
       @conf = conf
       @plugin = plugin
+      @service = service
     end
 
     def escape_html(str)
@@ -183,9 +184,10 @@ module LDBlogWriter
 
         if upload_uri_h[File.basename(img_path)] == nil
           # 新規アップロード
-          com = Command.new
-          img_uri = com.upload(@conf.upload_uri, @conf.username, @conf.password,
-                               img_path, img_title)
+#          com = Command.new
+#          img_uri = com.upload(@conf.upload_uri, @conf.username, @conf.password,
+#                               img_path, img_title)
+          img_uri = @service.post_image(img_pat, img_title)
           if img_uri != false
             upload_uri_h[File.basename(img_path)] = img_uri
             if @conf.upload_uri_file != nil and 

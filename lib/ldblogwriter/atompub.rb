@@ -2,14 +2,11 @@
 require 'rexml/document'
 require 'uri'
 require 'net/http'
-require 'shared-mime-info'
-require 'mime/types'
 
-require 'wsse.rb'
-require 'atom_response.rb'
+require 'ldblogwriter/wsse.rb'
+require 'ldblogwriter/atom_response.rb'
 
 module LDBlogWriter
-
   class AtomPubClient
     attr_accessor :username, :password, :authtype
 
@@ -19,10 +16,43 @@ module LDBlogWriter
       @authtype = authtype
     end
 
-    def get_service(service_uri)
+    def get_resource_uri(uri_str)
+      uri = URI.parse(uri_str)
+      Net::HTTP.start(uri.host, uri.port) do |http|
+        res = http.get(uri.path,
+                       authenticate(@username, @password, @authtype))
+        if res.code != "200"
+          puts res.body
+          return false
+        end
+        return AtomResponse.new(res.body).collection_uri
+      end
     end
 
-    def create_entry(uri, entry, title)
+    def create_entry(uri_str, entry_xml)
+      if $DEBUG
+        puts uri_str
+      end
+      uri = URI.parse(uri_str)
+      Net::HTTP.start(uri.host, uri.port) do |http|
+        res = http.post(uri.path, entry_xml,
+                        authenticate(@username, @password).update({'Content-Type' => 'application/atom+xml'}))
+        case res.code
+        when "201"
+          edit_uri = res['Location']
+        when "404"
+          puts res.body
+          edit_uri = false
+        when "200"
+          puts res.body
+          edit_uri = false
+        else
+          puts "return code: " + res.code
+          puts "response: " + res.body
+          edit_uri = false
+        end
+        return edit_uri
+      end
     end
 
     def create_media(uri_str, filename, title = nil)
@@ -35,17 +65,13 @@ module LDBlogWriter
         puts "Can't open #{filename}"
         exit
       end
-      #type = `file -bi #{filename}`.chomp
-#      mimetype = MIME.check(filename) 
-      mimetype = MIME::Types.type_for(filename)[0].to_s
+      mimetype = get_mimetype(filename)
 
       if title == nil
         title = File.basename(filename)
       end
       
-      puts uri_str
       uri = URI.parse(uri_str)
-#      data = to_xml_image(title, type, raw_data)
 
       http_header = authenticate(@username, @password, @authtype)
       http_header = http_header.merge({"Content-type"=>mimetype,
@@ -59,10 +85,8 @@ module LDBlogWriter
           return false
         end
         img_uri = AtomResponse.new(res.body).media_src
-p img_uri
         return img_uri
       end
-
     end
 
     def authenticate(username, password, authtype)
@@ -72,7 +96,7 @@ p img_uri
     private
     
     def auth_wsse(username, password)
-      return {'X-WSSE' => Wsse::get(username, password)}
+      return {'X-WSSE' => LDBlogWriter::Wsse::get(username, password)}
     end
 
     def auth_basic(username, password)
@@ -82,22 +106,14 @@ p img_uri
       "auth_#{type.to_s.downcase}".intern
     end
 
-    def to_xml_image(title, type, raw_data)
-      data = <<EOF
-<?xml version="1.0" encoding="utf-8"?>
-<entry xmlns="http://www.w3.org/2005/Atom"
-    xmlns:app="http://www.w3.org/2007/app"
-    xmlns:blogcms="http://blogcms.jp/-/atom">
-EOF
-#      data += "<title>#{title}</title>\n"
-#      data += "<content type=\"#{type}\" mode=\"base64\">\n"
-      data += "<content type=\"image/jpeg\" mode=\"base64\">"
-      data += [raw_data].pack("m").chomp
-      data += "</content>\n"
-      data += "</entry>\n"
-      return data
+    def get_mimetype(filename)
+      begin
+        require 'mime/types'
+        return MIME::Types.type_for(filename)[0].to_s
+      rescue
+        return `file -bi #{filename}`.chomp
+      end
     end
-
   end
 end
 
@@ -119,10 +135,13 @@ if defined?($test) && $test
     end
     
     def test_create_media
-      @atom.create_media(@conf.atom_pub_uri+"blog/" + @conf.username+"/image",
-                         "../../test/test.jpg", "test_image.jpg")
+#      @atom.create_media(@conf.atom_pub_uri+"blog/" + @conf.username+"/image",
+#                         "../../test/test.jpg", "test_image.jpg")
     end
 
+    def test_get_resource_uri
+      uri_a = @atom.get_resource_uri(@conf.atom_pub_uri)
+    end
   end
 end
 

@@ -129,6 +129,7 @@ end
       Net::HTTP.start(uri.host, uri.port) do |http|
 #        entry = BlogEntry.new(entry.title, entry.category, entry.content)
         data = entry.to_xml
+
         res = http.put(uri.path, data, get_auth_info(username, password))
         if $DEBUG
           puts res
