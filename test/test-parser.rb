@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-$LOAD_PATH.unshift '../lib'
+$LOAD_PATH.unshift 'lib'
+
 
 require 'test/unit'
 require 'ldblogwriter/config.rb'
@@ -16,13 +17,14 @@ end
 
 class TestParser < Test::Unit::TestCase
   def setup
-    @conf = LDBlogWriter::Config.new('test.conf')
+    @conf = LDBlogWriter::Config.new('test/test.conf')
     @parser = LDBlogWriter::Parser.new(@conf, nil)
   end
 
     def test_to_html
+      str = "テスト。\n\n空行ごとに分離されるとうれしいな。\n"
       assert_equal("<p>\nテスト。\n</p>\n<p>\n空行ごとに分離されるとうれしいな。\n</p>", 
-                   @parser.to_html("テスト。\n\n空行ごとに分離されるとうれしいな。\n"))
+                   @parser.to_html(str))
     end
 
   def test_parse_img
@@ -80,7 +82,7 @@ class TestParser < Test::Unit::TestCase
   def test_parse_a_href
     entry = LDBlogWriter::BlogEntry.new(@conf, "test", "category")
     @parser.to_html("[[hoge:http://blog.livedoor.jp/masahino123/archives/64994357.html]]", entry)
-    assert_equal(["http://app.blog.livedoor.jp/masahino123/tb.cgi/64994357"],
+    assert_equal(["http://trackback.blogsys.jp/livedoor/masahino123/64994357"],
                  entry.trackback_url_array)
   end
 
@@ -105,8 +107,17 @@ class TestParser < Test::Unit::TestCase
   def test_parse_p
   end
 
-  def tet_a_href
+  def test_a_href
   end
 
-  
+  def test_get_entry
+    entry = @parser.get_entry("<hoge> title")
+    assert_equal("hoge", entry.category)
+    assert_equal("title", entry.title)
+
+    entry = @parser.get_entry("title2")
+    assert_equal(nil, entry.category)
+    assert_equal("title2", entry.title)
+    entry
+  end
 end

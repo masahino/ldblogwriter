@@ -56,51 +56,16 @@ module LDBlogWriter
       end
       puts "filename : #{filename}"
       # load
-      category = ""
-      title = ""
       src_text = ""
-      content = ""
       File.open(filename, "r") do |file|
-        line = file.gets
-        line = Kconv::toutf8(line)
-        line.gsub!(/^<(.*)>\s+/) do |str|
-          category = $1
-          if get_categories.include?(category)
-            puts "category : #{category}"
-          else
-            puts "unknown category : #{category}"
-          end
-          str.replace("")
-        end
-        title = line
-        puts "title : #{title}"
         src_text = file.read
         src_text = Kconv::toutf8(src_text)
       end
-      entry = BlogEntry.new(@conf, title, category)
-      if @conf.convert_to_html == true
-        src_text = check_image_file(filename, src_text)
-        content = Parser.new(@conf, @plugin, @service).to_html(src_text, entry)
-        if @conf.html_directory != nil
-          save_html_file(@conf.html_directory, File.basename(filename), content)
-        end
-      else
-        content = src_text
-      end
-      entry.content = content
-      if $DEBUG
-        puts "category: " + entry.category
-        puts "title: " +entry.title
-        puts "contnt: " + entry.content
-      end
-      
-      command = Command::new(@conf.auth_type)
+      entry = Parser.new(@conf, @plugin, @service).get_entry(src_text)
+
       if @edit_uri_h[File.basename(filename)] == nil
         # post
         if dry_run == false
-#          edit_uri = command.post(@conf.post_uri, @conf.username,
-#                                  @conf.password,
-#                                  entry)
           edit_uri = @service.post_entry(entry.content, entry.title, entry.category)
           if $DEBUG
             puts "editURI : #{edit_uri}"
@@ -114,8 +79,7 @@ module LDBlogWriter
         # edit
         if dry_run == false
           edit_uri = @edit_uri_h[File.basename(filename)]
-          command.edit(edit_uri, @conf.username, @conf.password,
-                       entry)
+          @service.edit_entry(edit_uri, entry)
           entry.get_entry_info(edit_uri)
         end
       end

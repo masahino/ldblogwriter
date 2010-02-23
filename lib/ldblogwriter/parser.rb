@@ -20,6 +20,30 @@ module LDBlogWriter
       @service = service
     end
 
+    def get_entry(src_text)
+      lines = src_text.rstrip.split(/\r?\n/)
+      first_line = lines.shift
+      category = nil
+      first_line.gsub!(/^<(.*)>\s+/) do |str|
+        category = $1
+        str.replace("")
+      end
+      title = first_line
+      src_text = lines.join("\n")
+      @entry = BlogEntry.new(@conf, title, category)
+      if @conf.convert_to_html == true
+#        src_text = check_image_file(filename, src_text)
+        content = to_html(src_text)
+#        if @conf.html_directory != nil
+#          save_html_file(@conf.html_directory, File.basename(filename), content)
+#        end
+      else
+        content = src_text
+      end
+      @entry.content = content
+      return @entry
+    end
+
     def escape_html(str)
       str.gsub!(/&/, '&amp;')
       str.gsub!(/"/, '&quot;')
@@ -28,8 +52,11 @@ module LDBlogWriter
       return str
     end
 
+#    def to_html(src, entry = nil)
     def to_html(src, entry = nil)
-      @entry = entry
+      if entry != nil
+        @entry = entry
+      end
       buf = []
       lines = src.rstrip.split(/\r?\n/).map {|line| line.chomp}
 

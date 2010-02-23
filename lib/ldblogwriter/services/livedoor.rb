@@ -4,6 +4,7 @@ require 'net/http'
 require 'cgi'
 
 require 'ldblogwriter/atompub.rb'
+require 'ldblogwriter/service.rb'
 
 module LDBlogWriter
   class LiveDoor < AbstractService
@@ -13,7 +14,7 @@ module LDBlogWriter
       get_resource_uri(@atom_client, @config.atom_pub_uri)
     end
 
-    def post_entry(conetent, title, category = nil)
+    def post_entry(content, title, category = nil)
       return @atom_client.create_entry(@entry_uri, to_xml(content, title, category))
     end
 
@@ -34,7 +35,7 @@ module LDBlogWriter
     xmlns:app="http://www.w3.org/2007/app"
     xmlns:blogcms="http://blogcms.jp/-/atom">
 EOF
-      data += "<title>#{@title.chomp}</title>\n"
+      data += "<title>#{title.chomp}</title>\n"
 
 # #    <link rel="alternate" type="text/html" 
 #        href="http://blog.livedoor.jp/staff/archives/000000.html" />
@@ -47,10 +48,10 @@ EOF
 
       data += "<content type=\"text/html\" xml:lang=\"ja\">\n"
 #      data += [@content].pack("m").chomp
-      data += CGI::escapeHTML(@content)
+      data += CGI::escapeHTML(content)
       data += "</content>\n"
 
-      data += "<category scheme=\"http://livedoor.blogcms.jp/atom/blog/masahino123/category\" term=\"#{@category.chomp}\"/>\n"
+      data += "<category scheme=\"http://livedoor.blogcms.jp/atom/blog/masahino123/category\" term=\"#{category.chomp}\"/>\n"
 
 #     <blogcms:source>
 #         <blogcms:body><![CDATA[<p>記事本文</p>]]></blogcms:body>

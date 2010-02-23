@@ -36,7 +36,7 @@ module LDBlogWriter
       uri = URI.parse(uri_str)
       Net::HTTP.start(uri.host, uri.port) do |http|
         res = http.post(uri.path, entry_xml,
-                        authenticate(@username, @password).update({'Content-Type' => 'application/atom+xml'}))
+                        authenticate(@username, @password, @authtype).update({'Content-Type' => 'application/atom+xml'}))
         case res.code
         when "201"
           edit_uri = res['Location']
