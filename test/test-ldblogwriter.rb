@@ -1,7 +1,16 @@
-$LOAD_PATH.unshift '../lib'
+$LOAD_PATH.unshift 'lib'
 
 require 'test/unit'
 require 'ldblogwriter.rb'
+
+require 'test/test-atom_response.rb'
+require 'test/test-config.rb'
+require 'test/test-parser.rb'
+require 'test/test-plugin.rb'
+require 'test/test-trackback.rb'
+require 'test/test-wsse.rb'
+require 'test/test-service_livedoor.rb'
+
 
 class TestLDBlogWriter < Test::Unit::TestCase
   def setup

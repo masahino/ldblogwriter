@@ -3,6 +3,7 @@ $LOAD_PATH.unshift '../lib'
 require 'test/unit'
 require 'ldblogwriter/config.rb'
 require 'ldblogwriter/plugin.rb'
+require 'ldblogwriter/entry.rb'
 
 class TestPlugin < Test::Unit::TestCase
   def setup
@@ -22,6 +23,6 @@ class TestPlugin < Test::Unit::TestCase
 
   def test_eval_post
     @plugin.eval_src('hoge("aa","bb")')
-    @plugin.eval_post
+    @plugin.eval_post(LDBlogWriter::BlogEntry.new(@conf, "test"))
   end
 end

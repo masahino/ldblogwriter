@@ -72,7 +72,6 @@ module LDBlogWriter
           end
           if edit_uri != false
             save_edit_uri(filename, edit_uri)
-            entry.get_entry_info(edit_uri)
           end
         end
       else
@@ -80,7 +79,6 @@ module LDBlogWriter
         if dry_run == false
           edit_uri = @edit_uri_h[File.basename(filename)]
           @service.edit_entry(edit_uri, entry)
-          entry.get_entry_info(edit_uri)
         end
       end
       # save

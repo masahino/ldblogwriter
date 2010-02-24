@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 $LOAD_PATH.unshift 'lib'
 
-
 require 'test/unit'
 require 'ldblogwriter/config.rb'
 require 'ldblogwriter/parser.rb'
@@ -74,10 +73,10 @@ class TestParser < Test::Unit::TestCase
                  @parser.parse_inline("http://www.google.com"))
   end
 
-  def test_parse_pre_highlight
-    assert_equal("<div class=\"ruby\"><pre><span class=\"keyword\">def </span><span class=\"method\">hoge</span><span class=\"punct\">()</span>\n<span class=\"keyword\">end</span></pre></div>\n",
-                 @parser.to_html(" highlight(ruby)\n def hoge()\n end"))
-  end
+#  def test_parse_pre_highlight
+#    assert_equal("<div class=\"ruby\"><pre><span class=\"keyword\">def </span><span class=\"method\">hoge</span><span class=\"punct\">()</span>\n<span class=\"keyword\">end</span></pre></div>\n",
+#                 @parser.to_html(" highlight(ruby)\n def hoge()\n end"))
+#  end
 
   def test_parse_a_href
     entry = LDBlogWriter::BlogEntry.new(@conf, "test", "category")

@@ -51,7 +51,9 @@ EOF
       data += CGI::escapeHTML(content)
       data += "</content>\n"
 
-      data += "<category scheme=\"http://livedoor.blogcms.jp/atom/blog/masahino123/category\" term=\"#{category.chomp}\"/>\n"
+      if category != nil
+        data += "<category scheme=\"http://livedoor.blogcms.jp/atom/blog/masahino123/category\" term=\"#{category.chomp}\"/>\n"
+      end
 
 #     <blogcms:source>
 #         <blogcms:body><![CDATA[<p>記事本文</p>]]></blogcms:body>
@@ -77,32 +79,4 @@ EOF
   end
 end
 
-if $0 == __FILE__
-  $test = true
-end
-
-if defined?($test) && $test
-  require 'test/unit'
-  require 'pp'
-
-  require '../service.rb'
-  require '../config.rb'
-  require '../atom_response.rb'
-  require '../atompub.rb'
-  require '../wsse.rb'
-
-  class TestLiveDoor < Test::Unit::TestCase
-    def setup
-      config_file = ENV['HOME'] + "/.ldblogwriter.conf"
-      conf = LDBlogWriter::Config.new(config_file)
-      @ld = LDBlogWriter::LiveDoor::new(conf)
-    end
-
-    def test_to_xml
-      @ld.to_xml
-    end
-
-
-  end
-end
 

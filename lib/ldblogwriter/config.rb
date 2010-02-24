@@ -20,7 +20,7 @@ module LDBlogWriter
       @service = 'livedoor'
       @auth_type = 'wsse'
       if filename != nil
-        puts filename
+#        puts filename
         load(filename)
       end
     end

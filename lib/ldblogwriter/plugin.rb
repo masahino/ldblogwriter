@@ -47,18 +47,3 @@ module LDBlogWriter
     end
   end
 end
-
-if $0 == __FILE__
-#  require 'test-plugin.rb'
-  $test = true
-end
-
-if defined?($test) && $test
-  require 'test/unit'
-
-  class TestPlugin < Test::Unit::TestCase
-    def setup
-    end
-
-  end
-end
