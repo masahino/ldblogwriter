@@ -20,9 +20,7 @@ require 'ldblogwriter/service_builder.rb'
 Net::HTTP.version_1_2
 
 module LDBlogWriter
-  VERSION = '0.4.1'
-
-  GOOGLE_LOGIN_URL = 'https://www.google.com/accounts/ClientLogin'
+  VERSION = '0.3.9'
 
   # ここからスタート
   class Blog
@@ -40,11 +38,7 @@ module LDBlogWriter
         puts "blog title:" + @conf.blog_title
       end
       @plugin = Plugin.new(@conf)
-      begin
-        @edit_uri_h = YAML.load_file(@conf.edit_uri_file)
-      rescue
-        @edit_uri_h = Hash.new
-      end
+      @entry_manger = LDBlogWriger::EntryManger.new(@conf)
     end
 
     def post_entry(filename, dry_run = true)
@@ -63,7 +57,7 @@ module LDBlogWriter
       end
       entry = Parser.new(@conf, @plugin, @service).get_entry(src_text)
 
-      if @edit_uri_h[File.basename(filename)] == nil
+      if @entry_manager.has_entry?(filename) == false
         # post
         if dry_run == false
           edit_uri = @service.post_entry(entry.content, entry.title, entry.category)
@@ -71,34 +65,38 @@ module LDBlogWriter
             puts "editURI : #{edit_uri}"
           end
           if edit_uri != false
-            save_edit_uri(filename, edit_uri)
+            @entry_manager.save_edit_uri(filename, edit_uri)
           end
         end
       else
         # edit
         if dry_run == false
-          edit_uri = @edit_uri_h[File.basename(filename)]
+          edit_uri = @entry_manager.get_edit_uri(filename)
           @service.edit_entry(edit_uri, entry)
         end
       end
-      # save
+
       if @conf.auto_trackback == true
-        entry.trackback_url_array.uniq!
-        entry.trackback_url_array.each do |trackback_url|
-          print "Send trackback to #{trackback_url} ? (y/n) "
-          ret = $stdin.gets.chomp
-          pp ret
-          if ret == "y" or ret == "Y" 
-            TrackBack.send(trackback_url, @conf.blog_title, entry.title,
-                           entry.summary, entry.alternate)
-          end
-        end
+        send_trackback(entry)
       end
 
       # post process
       @plugin.eval_post(entry)
     end
 
+    def send_trackback(entry)
+      entry.trackback_url_array.uniq!
+      entry.trackback_url_array.each do |trackback_url|
+        print "Send trackback to #{trackback_url} ? (y/n) "
+        ret = $stdin.gets.chomp
+        pp ret
+        if ret == "y" or ret == "Y" 
+          TrackBack.send(trackback_url, @conf.blog_title, entry.title,
+                         entry.summary, entry.alternate)
+        end
+      end
+    end
+    
     # ファイル名と同じ名前で拡張子が、"jpg"のファイルがあったら
     # アップロードしてエントリーの先頭に入れる。
     def check_image_file(filename, src_text)
@@ -120,49 +118,6 @@ module LDBlogWriter
       return src_text
     end
 
-    def check_blog_info
-      if @conf.atom_api_uri != nil
-        blog_info = Command.new.get(@conf.atom_api_uri + "/blog_id=" + @conf.blog_id,
-                                    @conf.username, @conf.password)
-        if blog_info != false
-          blog_info.doc.elements.each('feed/title') do |element|
-            @conf.blog_title = element.text
-          end
-        end
-      end
-    end
-
-    def check_config_api
-      # configの内容と、Atom APIでの取得といろいろ
-      # まずは一覧から
-      if @conf.atom_api_uri != nil
-        api_list = Command.new.get(@conf.atom_api_uri, @conf.username, @conf.password)
-        if api_list != false
-          api_list.doc.elements.each('feed/link') do |element|
-            case element.attributes['rel']
-            when 'service.post'
-              if @conf.post_uri == nil
-                puts "!!!!!set  post uri"
-                @conf.post_uri = element.attributes['href']
-              end
-            when 'service.feed'
-            when 'service.categories'
-              @conf.categories_uri = element.attributes['href']
-            when 'service.upload'
-              if @conf.upload_uri == nil
-                @conf.upload_uri = element.attributes['href']
-              end
-            else
-              puts "unknwon service #{element.attributes['rel']}"
-            end
-          end
-        end
-      end
-      if $DEBUG
-        pp @conf
-      end
-    end
-
     def check_config_user_and_pass
       if @conf.username == nil
         print "Username: "
@@ -182,81 +137,11 @@ module LDBlogWriter
       if $DEBUG
         puts "check Atom APIs"
       end
-      check_config_api
-#      check_blog_info
-if $DEBUG
-  pp @conf
-end
     end
 
     def print_usage
       puts "#{$0} [-n] <text file>" 
     end
-
-    def get_services
-      com = Command.new
-      service_list = Command.new.get(@conf.atom_api_uri, @conf.username, @conf.password)
-#      if service_list != false
-#        service_list.doc.elements.each('feed/link') do |element|
-#          puts element.attributes['rel'] + ":" + element.attributes['href']
-#        end
-#      end
-      return service_list
-    end
-
-    def get_categories
-      categories = Array.new
-      com = Command.new
-      if @conf.categories_uri != nil
-        ret = com.get(@conf.categories_uri, @conf.username, @conf.password)
-        ret.doc.elements.each('categories/subject') do |category|
-          categories.push(category.text)
-        end
-      end
-      return categories
-    end
-
-    def save_edit_uri(filename, edit_uri)
-      filename = File.basename(filename)
-      @edit_uri_h[filename] = edit_uri
-      if @conf.edit_uri_file != nil
-        YAML.dump(@edit_uri_h, File.open(@conf.edit_uri_file, 'w'))
-      end
-    end
-
-    def save_html_file(directory, filename, text)
-      # directoryなかったら作る
-      if File.exists?(directory) 
-        if File.ftype(directory) != "directory"
-          puts "#{directory} is not directory"
-          return
-        end
-      else
-        Dir.mkdir(directory)
-      end
-      # open
-      html_filename = filename.gsub(/.txt$/, ".html")
-      if $DEBUG
-        puts "write html to #{html_filename}"
-      end
-      File.open(directory + "/" + html_filename, "w") do |file|
-        file.write(text)
-      end
-    end
-  end
-
-end
-
-if $0 == __FILE__
-  $test = true
-end
-
-if defined?($test) && $test
-  require 'test/unit'
-
-  class TestBlog < Test::Unit::TestCase
-    def test_check_config
-      blog = LDBlogWriter::Blog.new()
-    end
   end
 end
+
