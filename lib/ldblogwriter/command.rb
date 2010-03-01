@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-$LOAD_PATH << '../../lib' unless $LOAD_PATH.include? '..'
+# ToDo:消す
 
 require 'net/http'
 require 'net/https'

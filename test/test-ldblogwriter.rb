@@ -4,12 +4,17 @@ require 'test/unit'
 require 'ldblogwriter.rb'
 
 require 'test/test-atom_response.rb'
+require 'test/test-atompub.rb'
 require 'test/test-config.rb'
+require 'test/test-entry.rb'
+require 'test/test-entry_manager.rb'
 require 'test/test-parser.rb'
 require 'test/test-plugin.rb'
+require 'test/test-service.rb'
+require 'test/test-service_builder.rb'
 require 'test/test-trackback.rb'
 require 'test/test-wsse.rb'
-require 'test/test-service_livedoor.rb'
+require 'test/services/test-livedoor.rb'
 
 
 class TestLDBlogWriter < Test::Unit::TestCase

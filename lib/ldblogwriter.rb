@@ -16,6 +16,7 @@ require 'ldblogwriter/plugin'
 require 'ldblogwriter/trackback'
 require 'ldblogwriter/entry'
 require 'ldblogwriter/service_builder.rb'
+require 'ldblogwriter/entry_manager.rb'
 
 Net::HTTP.version_1_2
 
@@ -38,7 +39,7 @@ module LDBlogWriter
         puts "blog title:" + @conf.blog_title
       end
       @plugin = Plugin.new(@conf)
-      @entry_manger = LDBlogWriger::EntryManger.new(@conf)
+      @entry_manager = LDBlogWriter::EntryManager.new(@conf)
     end
 
     def post_entry(filename, dry_run = true)
