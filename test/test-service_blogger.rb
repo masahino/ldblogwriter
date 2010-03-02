@@ -2,7 +2,7 @@ $LOAD_PATH.unshift 'lib'
 
 require 'test/unit'
 require 'mocha'
-require 'ldblogwriter/services/livedoor.rb'
+require 'ldblogwriter/services/blogger.rb'
 require 'ldblogwriter/config.rb'
 
 
@@ -10,7 +10,7 @@ class TestLiveDoor < Test::Unit::TestCase
   def setup
     config_file = ENV['HOME'] + "/.ldblogwriter.conf"
     conf = LDBlogWriter::Config.new(config_file)
-    @ld = LDBlogWriter::LiveDoor::new(conf)
+    @ld = LDBlogWriter::Blogger::new(conf)
   end
   
   def test_to_xml

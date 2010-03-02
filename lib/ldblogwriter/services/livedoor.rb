@@ -5,6 +5,7 @@ require 'cgi'
 
 require 'ldblogwriter/atompub.rb'
 require 'ldblogwriter/service.rb'
+require 'ldblogwriter/atom_response.rb'
 
 module LDBlogWriter
   class LiveDoor < AbstractService
@@ -71,9 +72,9 @@ EOF
     private
 
     def get_resource_uri(atom_client, atom_uri)
-      res_a = atom_client.get_resource_uri(atom_uri)
-      @entry_uri = res_a[0]
-      @image_uri = res_a[1]
+      res = atom_client.get_resource_uri(atom_uri)
+      @entry_uri = res.collection_uri[0]
+      @image_uri = res.collection_uri[1]
     end
 
   end

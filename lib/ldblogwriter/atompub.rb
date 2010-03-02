@@ -2,6 +2,7 @@
 require 'rexml/document'
 require 'uri'
 require 'net/http'
+require 'net/https'
 
 require 'ldblogwriter/wsse.rb'
 require 'ldblogwriter/atom_response.rb'
@@ -9,6 +10,8 @@ require 'ldblogwriter/atom_response.rb'
 module LDBlogWriter
   class AtomPubClient
     attr_accessor :username, :password, :authtype
+
+    GOOGLE_LOGIN_URL = 'https://www.google.com/accounts/ClientLogin'
 
     def initialize(username, password, authtype=nil)
       @username = username
@@ -25,7 +28,7 @@ module LDBlogWriter
           puts res.body
           return false
         end
-        return AtomResponse.new(res.body).collection_uri
+        return AtomResponse.new(res.body)
       end
     end
 
@@ -102,6 +105,11 @@ module LDBlogWriter
     def auth_basic(username, password)
     end
 
+    def auth_google(username, password)
+      return {'Authorization' => 'GoogleLogin auth='+
+        get_google_auth_token(username, password)}
+    end
+
     def auth_method(type)
       "auth_#{type.to_s.downcase}".intern
     end
@@ -114,34 +122,36 @@ module LDBlogWriter
         return `file -bi #{filename}`.chomp
       end
     end
-  end
-end
 
-
-if $0 == __FILE__
-  $test = true
-end
-
-if defined?($test) && $test
-  require 'test/unit'
-  require 'config.rb'
-  require 'pp'
-
-  class TestAtomPub < Test::Unit::TestCase
-    def setup
-      config_file = ENV['HOME'] + "/.ldblogwriter.conf"
-      @conf = LDBlogWriter::Config.new(config_file)
-      @atom = LDBlogWriter::AtomPubClient::new(@conf.username, @conf.password, :wsse)
-    end
+    private
     
-    def test_create_media
-#      @atom.create_media(@conf.atom_pub_uri+"blog/" + @conf.username+"/image",
-#                         "../../test/test.jpg", "test_image.jpg")
+    def get_google_auth_token(username, password)
+      url = URI.parse(GOOGLE_LOGIN_URL)
+      req = Net::HTTP::Post.new(url.path)
+      
+      req.form_data = {'Email' => username,
+        'Passwd' => password,
+        'service' => 'blogger', 
+        'accountType' => 'GOOGLE',
+        'source' => "hoge-lbw-1"}
+      https = Net::HTTP.new(url.host, url.port)
+      https.use_ssl = true
+      https.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      store = OpenSSL::X509::Store.new
+      store.set_default_paths
+      https.cert_store = store
+      https.start do
+        res = https.request(req)
+        if res.body =~ /Auth=(.+)/
+          return $1
+        else
+          puts res.body
+        end
+      end
+      return nil
     end
 
-    def test_get_resource_uri
-      uri_a = @atom.get_resource_uri(@conf.atom_pub_uri)
-    end
   end
 end
+
 
