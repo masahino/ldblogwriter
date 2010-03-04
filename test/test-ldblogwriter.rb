@@ -14,7 +14,6 @@ require 'test/test-service.rb'
 require 'test/test-service_builder.rb'
 require 'test/test-trackback.rb'
 require 'test/test-wsse.rb'
-require 'test/services/test-livedoor.rb'
 
 
 class TestLDBlogWriter < Test::Unit::TestCase

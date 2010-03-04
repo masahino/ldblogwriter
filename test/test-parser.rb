@@ -5,6 +5,7 @@ require 'test/unit'
 require 'ldblogwriter/config.rb'
 require 'ldblogwriter/parser.rb'
 require 'ldblogwriter/entry.rb'
+require 'ldblogwriter/service.rb'
 
 module LDBlogWriter
   class Command
@@ -17,7 +18,8 @@ end
 class TestParser < Test::Unit::TestCase
   def setup
     @conf = LDBlogWriter::Config.new('test/test.conf')
-    @parser = LDBlogWriter::Parser.new(@conf, nil)
+    service = LDBlogWriter::Service::DummyService.new(@conf)
+    @parser = LDBlogWriter::Parser.new(@conf, nil, service)
   end
 
     def test_to_html
@@ -27,9 +29,9 @@ class TestParser < Test::Unit::TestCase
     end
 
   def test_parse_img
-    assert(@parser.parse_img('img(test.jpg)'))
+    assert(@parser.parse_img('#img(test/test.jpg)'))
     assert_equal(['<a href="http://image.blog.livedoor.jp/test_user/imgs/8/a/8a4d2846.jpg" target="_blank"><img src="http://image.blog.livedoor.jp/test_user/imgs/8/a/8a4d2846-s.jpg" alt="test" hspace="5" class="pict" align="left" /></a>'],
-                 @parser.parse_img('img(test.jpg, test)'))
+                 @parser.parse_img('#img(test.jpg, test)'))
   end
 
   def test_parse_ul
@@ -87,7 +89,7 @@ class TestParser < Test::Unit::TestCase
 
   def test_parse_trackback
     entry = LDBlogWriter::BlogEntry.new(@conf, "test", "category")
-    @parser.to_html("!trackback(http://app.blog.livedoor.jp/masahino123/tb.cgi/64994357)", entry)
+    @parser.to_html("#trackback(http://app.blog.livedoor.jp/masahino123/tb.cgi/64994357)", entry)
     assert_equal(["http://app.blog.livedoor.jp/masahino123/tb.cgi/64994357"],
                  entry.trackback_url_array)
   end

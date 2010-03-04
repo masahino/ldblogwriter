@@ -7,7 +7,7 @@ require 'ldblogwriter/entry.rb'
 
 class TestEntry < Test::Unit::TestCase
   def setup
-    @conf = LDBlogWriter::Config.new('test.conf')
+    @conf = LDBlogWriter::Config.new('test/test.conf')
     @parser = LDBlogWriter::Parser.new(@conf, nil)
   end
 
