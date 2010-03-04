@@ -5,10 +5,10 @@ module LDBlogWriter
   
   class EntryManager
 
-    def initialize(conf)
-      @conf = conf
+    def initialize(file_name)
+      @yaml_file_name = file_name
       begin
-        @edit_uri_h = YAML.load_file(@conf.edit_uri_file)
+        @edit_uri_h = YAML.load_file(@yaml_file_name)
       rescue
         @edit_uri_h = Hash.new
       end
@@ -29,9 +29,7 @@ module LDBlogWriter
     def save_edit_uri(filename, edit_uri)
       filename = File.basename(filename)
       @edit_uri_h[filename] = edit_uri
-      if @conf.edit_uri_file != nil
-        YAML.dump(@edit_uri_h, File.open(@conf.edit_uri_file, 'w'))
-      end
+      YAML.dump(@edit_uri_h, File.open(@yaml_file_name, 'w'))
     end
     
     def save_html_file(directory, filename, text)
