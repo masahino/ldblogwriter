@@ -39,7 +39,7 @@ module LDBlogWriter
         puts "blog title:" + @conf.blog_title
       end
       @plugin = Plugin.new(@conf)
-      @entry_manager = LDBlogWriter::EntryManager.new(@conf)
+      @entry_manager = LDBlogWriter::EntryManager.new(@conf.edit_uri_file)
     end
 
     def post_entry(filename, dry_run = true)
