@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 require 'open-uri'
 require 'pp'
-require 'ldblogwriter/command'
+require 'ldblogwriter/entry_manager.rb'
 require 'yaml'
 
 # parserは、pukiwikiparser.rbを参考にしています。
@@ -67,9 +67,9 @@ module LDBlogWriter
         when /\A----/
           lines.shift
           buf.push '<hr />'
-        when /\A!trackback\(.*\)/
+        when /\A#trackback\(.*\)/
           buf.push parse_trackback(lines.shift)
-        when /\Aimg\(.*\)/
+        when /\A#img\(.*\)/
           buf.push parse_img(lines.shift)
         when /\A\s/
           buf.concat parse_pre(take_block(lines, /\A\s/))
@@ -185,12 +185,8 @@ module LDBlogWriter
     # TODO: plugin化
     def parse_img(line)
       buf = []
-      # service == 'livedoor'のみ
-      if @conf.service != 'livedoor'
-        return buf
-      end
       img_str = ""
-      if line =~ /\Aimg\((.*)\).*/
+      if line =~ /\A#img\((.*)\).*/
         img_str = $1
         img_str.gsub!(/\s+/, "")
       end
@@ -198,41 +194,18 @@ module LDBlogWriter
       if img_title == nil
         img_title = File.basename(img_path)
       end
-      if $DEBUG
-        puts "parse_img: ima_path = #{img_path}"
-      end
-      if File.exist?(img_path)
-        # 既にupload済かどうかチェック
-        begin
-          upload_uri_h = YAML.load_file(@conf.upload_uri_file)
-        rescue
-          upload_uri_h = Hash.new
+      img_manager = LDBlogWriter::EntryManager.new(@conf.upload_uri_file)
+      if img_manager.has_entry?(File.basename(img_path)) == false
+        # 新規アップロード
+        img_uri = @service.post_image(img_path, img_title)
+        if img_uri != false
+          img_manager.save_edit_uri(File.basename(img_path), img_uri)
         end
-
-        if upload_uri_h[File.basename(img_path)] == nil
-          # 新規アップロード
-#          com = Command.new
-#          img_uri = com.upload(@conf.upload_uri, @conf.username, @conf.password,
-#                               img_path, img_title)
-          img_uri = @service.post_image(img_pat, img_title)
-          if img_uri != false
-            upload_uri_h[File.basename(img_path)] = img_uri
-            if @conf.upload_uri_file != nil and 
-                File.exist?(@conf.upload_uri_file)
-              YAML.dump(upload_uri_h, File.open(@conf.upload_uri_file, 'w'))
-            end
-          else
-            #error
-            exit
-          end
-        else
-          img_uri = upload_uri_h[File.basename(img_path)]
-        end
-        buf.push(get_img_html(img_uri, img_title))
-        # アップロードデータ保存
       else
-        $stderr.puts "can't find image file(#{img_path})!"
+        img_uri = img_manager.get_edit_uri(File.basename(img_path))
       end
+      buf.push(get_img_html(img_uri, img_title))
+      # アップロードデータ保存
       return buf
     end
 
