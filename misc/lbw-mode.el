@@ -1,7 +1,5 @@
-; ndiary-modeをベースに作成
+; ndiary-mode.elをベースに作成
 ;;
-;; ndiary-mode.el --- mode for editing ndiary's diary file
-;; ISHIKURA Hiroyuki <hiro@nekomimist.org>
 ;
 (defcustom lbw-post-command "lbw"
   "blog投稿用コマンド. Emacsが実行可能なファイルである必要がある."
@@ -31,7 +29,8 @@
   (interactive)
   (setq major-mode 'lbw-mode)
   (setq mode-name "livedoorBlogWriter")
-  (local-set-key "\C-c\C-c" 'lbw-post))
+  (local-set-key "\C-c\C-c" 'lbw-post)
+  (local-set-key "\C-ci" 'lbw-insert-image))
 
 (defun lbw-post (arg)
   "ブログをポストする"
@@ -131,5 +130,11 @@
 	(setq dateh 0))
     (setq now (list dateh datel))
     (lbw-edit-internal now)))
+
+(defun lbw-insert-image (arg)
+  "アップロードする画像ファイルを選択し、挿入."
+  (interactive "P")
+  (setq img_file_path (expand-file-name (read-file-name "image file name:")))
+  (insert (format "#img(\"%s\")" img_file_path)))
 
 (provide 'lbw-mode)
