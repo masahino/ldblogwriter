@@ -6,6 +6,7 @@ require 'net/https'
 
 require 'ldblogwriter/wsse.rb'
 require 'ldblogwriter/atom_response.rb'
+require 'mime/types'
 
 module LDBlogWriter
   module Service
@@ -23,14 +24,15 @@ module LDBlogWriter
         return create_entry(@entry_uri, to_xml(content, title, category))
       end
       
-      def edit_entry
+      def edit_entry(edit_uri, content, title, category = nil)
+        return edit_entry_intern(edit_uri, to_xml(content, title, category))
       end
 
       def delete_entry
       end
       
       def post_image(image_file_path, image_title = nil)
-        @atom_client.create_media(@image_uri, image_file_path)
+        create_media(@image_uri, image_file_path)
       end
 
       def get_resource_uri(uri_str)
@@ -69,6 +71,19 @@ module LDBlogWriter
             edit_uri = false
           end
           return edit_uri
+        end
+      end
+
+      def edit_entry_intern(uri_str, entry_xml)
+        uri = URI.parse(uri_str)
+        Net::HTTP.start(uri.host, uri.port) do |http|
+          res = http.put(uri.path, entry_xml,
+                          authenticate(@username, @password, @authtype).update({'Content-Type' => 'application/atom+xml'}))
+          if res.code != "200"
+            return false
+          else
+            return true
+          end
         end
       end
 
@@ -126,7 +141,6 @@ module LDBlogWriter
 
       def get_mimetype(filename)
         begin
-          require 'mime/types'
           return MIME::Types.type_for(filename)[0].to_s
         rescue
           return `file -bi #{filename}`.chomp

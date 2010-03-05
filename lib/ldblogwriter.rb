@@ -73,7 +73,7 @@ module LDBlogWriter
         # edit
         if dry_run == false
           edit_uri = @entry_manager.get_edit_uri(filename)
-          @service.edit_entry(edit_uri, entry)
+          @service.edit_entry(edit_uri, entry.content, entry.title, entry.category)
         end
       end
 
