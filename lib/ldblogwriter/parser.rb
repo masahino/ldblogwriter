@@ -13,6 +13,8 @@ require 'yaml'
 
 module LDBlogWriter
 
+  attr_accessor :entry
+
   class Parser
     def initialize(conf, plugin, service = nil)
       @conf = conf
@@ -52,7 +54,6 @@ module LDBlogWriter
       return str
     end
 
-#    def to_html(src, entry = nil)
     def to_html(src, entry = nil)
       if entry != nil
         @entry = entry
@@ -176,7 +177,7 @@ module LDBlogWriter
 
     def parse_trackback(line)
       buf = []
-      line.scan(/\!trackback\((.*)\).*/) do |url|
+      line.scan(/\#trackback\((.*)\).*/) do |url|
         @entry.trackback_url_array += url
       end
       return buf
@@ -198,9 +199,10 @@ module LDBlogWriter
       if img_manager.has_entry?(File.basename(img_path)) == false
         # 新規アップロード
         img_uri = @service.post_image(img_path, img_title)
-        if img_uri != false
-          img_manager.save_edit_uri(File.basename(img_path), img_uri)
+        if img_uri == false
+          return buf
         end
+        img_manager.save_edit_uri(File.basename(img_path), img_uri)
       else
         img_uri = img_manager.get_edit_uri(File.basename(img_path))
       end
@@ -252,18 +254,3 @@ module LDBlogWriter
 
 end
 
-if $0 == __FILE__
-  require 'test-parser.rb'
-  $test = true
-end
-
-if defined?($test) && $test
-  require 'test/unit'
-
-  class TestParser < Test::Unit::TestCase
-    def setup
-      @parser = LivedoorBlogWriter::Parser.new(BlogWriter::Config.new('test.conf'))
-    end
-
-  end
-end

@@ -109,7 +109,7 @@ module LDBlogWriter
           puts img_filename
         end
         if File::exist?(img_filename) == true
-          src_text = "img(#{img_filename})\n\n" + src_text
+          src_text = "#img(#{img_filename})\n\n" + src_text
           break
         end
       end

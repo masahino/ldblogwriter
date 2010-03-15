@@ -8,9 +8,16 @@ require 'ldblogwriter/entry.rb'
 require 'ldblogwriter/service.rb'
 
 module LDBlogWriter
-  class Command
-    def upload(atom_uri, user, pass, filename, title = nil)
-      return 'http://image.blog.livedoor.jp/test_user/imgs/8/a/8a4d2846.jpg'
+  class EntryManager
+    def save_edit_uri(filename, edit_uri)
+    end
+  end
+
+  module Service
+    class DummyService
+      def post_image(image_path, image_title)
+        return "http://example.com/hoge"
+      end
     end
   end
 end
@@ -18,7 +25,7 @@ end
 class TestParser < Test::Unit::TestCase
   def setup
     @conf = LDBlogWriter::Config.new('test/test.conf')
-    service = LDBlogWriter::Service::DummyService.new(@conf)
+    service = LDBlogWriter::Service::DummyService.new()
     @parser = LDBlogWriter::Parser.new(@conf, nil, service)
   end
 
@@ -30,7 +37,7 @@ class TestParser < Test::Unit::TestCase
 
   def test_parse_img
     assert(@parser.parse_img('#img(test/test.jpg)'))
-    assert_equal(['<a href="http://image.blog.livedoor.jp/test_user/imgs/8/a/8a4d2846.jpg" target="_blank"><img src="http://image.blog.livedoor.jp/test_user/imgs/8/a/8a4d2846-s.jpg" alt="test" hspace="5" class="pict" align="left" /></a>'],
+    assert_equal(['<a href="http://example.com/hoge" target="_blank"><img src="http://example.com/hoge" alt="test" hspace="5" class="pict" align="left" /></a>'],
                  @parser.parse_img('#img(test.jpg, test)'))
   end
 
