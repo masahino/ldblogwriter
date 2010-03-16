@@ -5,6 +5,8 @@ require 'ldblogwriter/config.rb'
 require 'ldblogwriter/plugin.rb'
 require 'ldblogwriter/entry.rb'
 
+require 'test/plugin/test-plugin_asin.rb'
+
 class TestPlugin < Test::Unit::TestCase
   def setup
     @conf = LDBlogWriter::Config.new(ENV['HOME'] + "/.ldblogwriter.conf")
@@ -12,7 +14,7 @@ class TestPlugin < Test::Unit::TestCase
   end
   
   def test_eval_src
-    p @plugin.eval_src("hoge")
+#    p @plugin.eval_src("hoge")
   end
 
   def test_load_plugins

@@ -9,7 +9,6 @@ class TestWsse < Test::Unit::TestCase
 
   def test_get
     assert(LDBlogWriter::Wsse::get('user', 'pass'))
-#    puts LDBlogWriter::Wsse::get('user', 'pass')
   end
 
 end
