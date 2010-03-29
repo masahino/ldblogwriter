@@ -32,7 +32,7 @@ module LDBlogWriter
       end
       title = first_line
       src_text = lines.join("\n")
-      @entry = BlogEntry.new(@conf, title, category)
+      @entry = BlogEntry.new(title, category)
       if @conf.convert_to_html == true
 #        src_text = check_image_file(filename, src_text)
         content = to_html(src_text)

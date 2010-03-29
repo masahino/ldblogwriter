@@ -8,6 +8,7 @@ module LDBlogWriter
       @conf = conf
       @post_process_list = Array.new
       if @conf.plugin_dir != nil
+        load_plugins('ldblogwriter/lib/plugin')
         load_plugins(@conf.plugin_dir)
       end
     end

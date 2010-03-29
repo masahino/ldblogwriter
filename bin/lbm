@@ -1,4 +1,8 @@
+#! /opt/local/bin/ruby1.9
+# -*- coding: utf-8 -*-
+
 require 'ldblogwriter'
 
 blog = LDBlogWriter::Blog.new()
+blog.entries
 

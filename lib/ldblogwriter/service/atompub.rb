@@ -13,11 +13,20 @@ module LDBlogWriter
     class AtomPubClient
       attr_accessor :username, :password, :authtype
 
-
       def initialize(username, password, authtype=nil)
         @username = username
         @password = password
         @authtype = authtype
+      end
+
+      def get_entryies
+        raise ""
+      end
+
+      # 
+      def get_entry(entry_uri)
+        response = get_resource_uri(entry_uri)
+        response
       end
 
       def post_entry(content, title, category = nil)
@@ -148,7 +157,6 @@ module LDBlogWriter
       end
 
       private
-      
 
     end
   end

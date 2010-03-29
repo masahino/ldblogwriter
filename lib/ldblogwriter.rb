@@ -140,6 +140,14 @@ module LDBlogWriter
       end
     end
 
+    # p
+    def entries
+      entries = @service.get_entries
+      entries.each do |entry|
+        puts entry.updated_time.to_s + "\t" + entry.title
+      end
+    end
+
     def print_usage
       puts "#{$0} [-n] <text file>" 
     end

@@ -11,7 +11,7 @@ class TestEntryManager < Test::Unit::TestCase
 #    config_file = ENV['HOME'] + "/.ldblogwriter.conf"
     config_file = "test/test.conf"
     conf = LDBlogWriter::Config.new(config_file)
-    @em = LDBlogWriter::EntryManager.new(conf)
+    @em = LDBlogWriter::EntryManager.new("test/test.yaml")
   end
   
   def test_save_edit_uri
@@ -19,6 +19,10 @@ class TestEntryManager < Test::Unit::TestCase
   end
 
   def test_save_html_file
+  end
+
+  def test_get_entries
+    p @em.get_entries
   end
 end
 

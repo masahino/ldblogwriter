@@ -51,6 +51,10 @@ module LDBlogWriter
         file.write(text)
       end
     end
+    
+    def get_entries
+      @edit_uri_h
+    end
   end
 end
 

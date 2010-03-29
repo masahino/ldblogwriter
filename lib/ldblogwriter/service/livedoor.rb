@@ -2,9 +2,12 @@
 require 'uri'
 require 'net/http'
 require 'cgi'
+require 'rexml/document'
+require 'time'
 
 require 'ldblogwriter/service/atompub.rb'
 require 'ldblogwriter/atom_response.rb'
+require 'ldblogwriter/entry.rb'
 
 module LDBlogWriter
   module Service
@@ -35,6 +38,30 @@ EOF
         return data
       end
 
+      def get_entries
+        entries = Array.new
+        uri = URI.parse(@entry_uri)
+        Net::HTTP.start(uri.host, uri.port) do |http|
+          res = http.get(uri.path,
+                         authenticate(@username, @password, @authtype))
+          source = res.body
+          if source.respond_to?('force_encoding')
+            source.force_encoding('UTF-8')
+          end
+          doc = REXML::Document.new(source)
+          doc.each_element("/feed/entry") do |e|
+            title = e.elements["title"].text
+            category = e.elements["//category"].attributes["term"]
+            entry = LDBlogWriter::BlogEntry.new(title, category)
+            entry.updated_time = Time::parse(e.elements["updated"].text)
+            entry.published_time = Time::parse(e.elements["published"].text)
+            entry.alternate_uri = e.elements["link[@rel='alternate']"].attributes["href"]
+            entry.edit_uri = e.elements["link[@rel='edit']"].attributes["href"]
+            entries.push(entry)
+          end
+        end
+        entries
+      end
     end
   end
 end

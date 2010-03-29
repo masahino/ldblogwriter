@@ -12,11 +12,11 @@ class TestEntry < Test::Unit::TestCase
   end
 
   def test_initialize
-    entry = LDBlogWriter::BlogEntry.new(@conf, "test")
+    entry = LDBlogWriter::BlogEntry.new("test")
     assert_equal("test", entry.title)
     assert_equal(nil, entry.category)
     assert_equal("", entry.content)
-    entry = LDBlogWriter::BlogEntry.new(@conf, "test2", "hoge", "huga")
+    entry = LDBlogWriter::BlogEntry.new("test2", "hoge", "huga")
     assert_equal("test2", entry.title)
     assert_equal("hoge", entry.category)
     assert_equal("huga", entry.content)
