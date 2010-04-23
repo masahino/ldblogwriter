@@ -10,7 +10,8 @@ module LDBlogWriter
     attr_accessor :trackback_url_array
     attr_accessor :edit_uri
     attr_accessor :updated_time, :published_time
-
+    attr_accessor :id
+    
     def initialize(title, category = nil, content = "")
       @title = title
       @category = category

@@ -140,11 +140,14 @@ module LDBlogWriter
       end
     end
 
-    # p
     def entries
       entries = @service.get_entries
-      entries.each do |entry|
-        puts entry.updated_time.to_s + "\t" + entry.title
+      entries.reverse_each do |entry|
+        puts entry.updated_time
+        puts entry.title
+        puts entry.id
+        puts entry.alternate_uri
+        puts entry.edit_uri
       end
     end
 

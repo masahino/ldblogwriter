@@ -111,7 +111,7 @@ module LDBlogWriter
         if title == nil
           title = File.basename(filename)
         end
-        
+
         uri = URI.parse(uri_str)
 
         http_header = authenticate(@username, @password, @authtype)

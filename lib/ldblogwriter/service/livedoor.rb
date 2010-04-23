@@ -16,7 +16,7 @@ module LDBlogWriter
         super(config.username, config.password, config.auth_type)
         res = get_resource_uri(config.atom_pub_uri)
         @entry_uri = res.collection_uri[0]
-        @image_uri = res.collection_uri[1]
+        @image_uri = res.collection_uri[3]
       end
 
       def to_xml(content, title, category = nil)
@@ -49,6 +49,7 @@ EOF
             source.force_encoding('UTF-8')
           end
           doc = REXML::Document.new(source)
+          p source
           doc.each_element("/feed/entry") do |e|
             title = e.elements["title"].text
             category = e.elements["//category"].attributes["term"]
@@ -57,6 +58,7 @@ EOF
             entry.published_time = Time::parse(e.elements["published"].text)
             entry.alternate_uri = e.elements["link[@rel='alternate']"].attributes["href"]
             entry.edit_uri = e.elements["link[@rel='edit']"].attributes["href"]
+            entry.id = e.elements["id"].text
             entries.push(entry)
           end
         end
