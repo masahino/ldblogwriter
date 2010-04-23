@@ -218,6 +218,9 @@ module LDBlogWriter
     def a_href(uri, label, cssclass)
       if @conf.auto_trackback == true
         open(uri) do |f|
+          if f.content_type != "text/html"
+            break
+          end
           contents = f.read
           trackback_ping = []
           contents.scan(%r|<rdf:Description\s+([^>]+)>|) do |attr|
