@@ -15,6 +15,7 @@ module LDBlogWriter
       def initialize(config)
         super(config.username, config.password, config.auth_type)
         res = get_resource_uri(config.atom_pub_uri)
+p res
         @entry_uri = res.collection_uri[0]
         @image_uri = res.collection_uri[3]
       end
@@ -32,7 +33,7 @@ EOF
         data += "</content>\n"
 
         if category != nil
-          data += "<category scheme=\"http://livedoor.blogcms.jp/atom/blog/masahino123/category\" term=\"#{category.chomp}\"/>\n"
+          data += "<category term=\"#{category.chomp}\"/>\n"
         end
         data += "</entry>\n"
         return data
