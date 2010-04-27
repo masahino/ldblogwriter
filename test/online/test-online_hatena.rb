@@ -5,12 +5,15 @@ require 'mocha'
 require 'ldblogwriter/service/hatena.rb'
 require 'ldblogwriter/config.rb'
 
-
 class TestHatena < Test::Unit::TestCase
   def setup
-    config_file = ENV['HOME'] + "/ldblogwriter-hatena.conf"
-    conf = LDBlogWriter::Config.new(config_file)
-    @sv = LDBlogWriter::Service::Hatena::new(conf)
+#    config_file = ENV['HOME'] + "/ldblogwriter-hatena.conf"
+    config_file = 'test/online/hatena.conf'
+    @conf = LDBlogWriter::Config.new(config_file)
+    @conf.username = ARGV[0]
+    @conf.password = ARGV[1]
+    @conf.atompub_uri = "http://d.hatena.ne.jp/#{@conf.username}/atom/blog"
+    @sv = LDBlogWriter::Service::Hatena::new(@conf)
   end
   
   def test_to_xml
@@ -18,12 +21,8 @@ class TestHatena < Test::Unit::TestCase
   end
 
   def test_post_entry
-    post_ret = Net::HTTPResponse.new("1.1", "201", "hoge")
-    post_ret['Location'] = "huga"
-#    Net::HTTP.any_instance.stubs(:post).returns(post_ret)
     ret = @sv.post_entry("test content", "this is test", "test")
     assert_instance_of(String, ret)
-    pp ret
   end
 end
 

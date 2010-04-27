@@ -14,8 +14,7 @@ module LDBlogWriter
     class LiveDoor < AtomPubClient
       def initialize(config)
         super(config.username, config.password, config.auth_type)
-        res = get_resource_uri(config.atom_pub_uri)
-p res
+        res = get_resource_uri(config.atompub_uri)
         @entry_uri = res.collection_uri[0]
         @image_uri = res.collection_uri[3]
       end

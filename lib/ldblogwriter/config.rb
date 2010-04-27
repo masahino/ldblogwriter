@@ -1,6 +1,6 @@
 module LDBlogWriter
   class Config
-    attr_accessor :atom_api_uri, :categories_uri, :atom_pub_uri
+    attr_accessor :atom_api_uri, :categories_uri, :atompub_uri
     attr_accessor :post_uri, :upload_uri, :username, :password, :api_key
     attr_accessor :edit_uri_file, :upload_uri_file
     attr_accessor :convert_to_html, :html_directory

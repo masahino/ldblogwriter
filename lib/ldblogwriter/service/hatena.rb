@@ -12,7 +12,7 @@ module LDBlogWriter
 
     def initialize(config)
       super(config.username, config.password, config.auth_type)
-      @entry_uri = config.post_uri
+      @entry_uri = config.atompub_uri
       #get_resource_uri(@atom_client, @config.atom_pub_uri)
     end
 
@@ -59,12 +59,6 @@ module LDBlogWriter
     end
 
     private
-
-    def get_resource_uri(atom_client, atom_uri)
-      res_a = atom_client.get_resource_uri(atom_uri)
-      @entry_uri = res_a[0]
-      @image_uri = res_a[1]
-    end
 
   end
 end
