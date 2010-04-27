@@ -1,4 +1,5 @@
 $LOAD_PATH.unshift 'lib'
+$LOAD_PATH.unshift 'plugins'
 
 require 'test/unit'
 #require 'ldblogwriter/plugin.rb'

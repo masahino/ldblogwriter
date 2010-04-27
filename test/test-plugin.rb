@@ -5,7 +5,17 @@ require 'ldblogwriter/config.rb'
 require 'ldblogwriter/plugin.rb'
 require 'ldblogwriter/entry.rb'
 
+require 'test/plugin/test-plugin_add_bookscope.rb'
 require 'test/plugin/test-plugin_asin.rb'
+require 'test/plugin/test-plugin_booklog.rb'
+require 'test/plugin/test-plugin_google.rb'
+require 'test/plugin/test-plugin_google_staticmap.rb'
+require 'test/plugin/test-plugin_hatenagraph.rb'
+require 'test/plugin/test-plugin_niconico.rb'
+require 'test/plugin/test-plugin_pics.rb'
+require 'test/plugin/test-plugin_stack.rb'
+require 'test/plugin/test-plugin_tag.rb'
+require 'test/plugin/test-plugin_youtube.rb'
 
 class TestPlugin < Test::Unit::TestCase
   def setup

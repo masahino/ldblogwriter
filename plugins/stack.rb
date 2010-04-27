@@ -45,29 +45,4 @@ def stack_post(asin, state)
   stack.edit_note(asin, @entry.alternate)
 end
 
-if $0 == __FILE__
-  $test = true
-end
-
-if defined?($test) && $test
-  require 'test/unit'
-  require 'ldblogwriter/config'
-
-
-  class TestStack < Test::Unit::TestCase
-    def setup
-      @conf = LDBlogWriter::Config.new()
-    end
-
-    # 利用者IDとAPIトークンが設定されてなければ、エラー
-    def test_config
-    end
-    
-    # asinとstateのチェック
-    def test_args
-    end
-
-  end
-end
-
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # 基本構文は、http: //maps.google.com/staticmap?parameters です。この parameters の部分に位置情報やマップのサイズ、マーカー情報などを指定します。使用できるパラメータには次のものがあります。
 
 # ・center（ 必須 ）： マップの中央の座標を緯度と経度で指定します。 （ 例 ：center=35.65641,139.699477）
@@ -16,24 +17,5 @@ def google_staticmap(longitude, latitude, zoom=13)
 EOF
 
   return str
-end
-
-if $0 == __FILE__
-  $test = true
-end
-
-if defined?($test) && $test
-  require 'test/unit'
-  require 'ldblogwriter/config'
-
-  class TestGoogleStaticMap < Test::Unit::TestCase
-    def setup
-      @conf = LDBlogWriter::Config.new(ENV['HOME']+"/.ldblogwriter.conf")
-    end
-
-    def test_google_staticmap
-      assert_equal(%Q!<script type="text/javascript" src="http://www.nicovideo.jp/thumb_watch/sm281634?w=485&h=385"></script>\n!, google_staticmap(35.688394,139.77132))
-    end
-  end
 end
 

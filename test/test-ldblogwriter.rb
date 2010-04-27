@@ -1,5 +1,7 @@
 $LOAD_PATH.unshift 'lib'
 
+require 'mocha'
+
 require 'test/unit'
 require 'ldblogwriter.rb'
 

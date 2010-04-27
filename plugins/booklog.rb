@@ -26,14 +26,5 @@ def booklog_post(asin)
   ""
 end
 
-if $0 == __FILE__
-  $test = true
-end
-
-if defined?($test) && $test
-  require 'test/unit'
-  require 'ldblogwriter/config'
-
-end
 
 

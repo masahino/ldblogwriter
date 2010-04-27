@@ -35,27 +35,3 @@ def add_bookscope(asin)
   return ""
 end
 
-
-if $0 == __FILE__
-  $test = true
-end
-
-if defined?($test) && $test
-  require 'test/unit'
-  require 'ldblogwriter/config'
-
-  class TestAddBookScope < Test::Unit::TestCase
-    def setup
-      @conf = LDBlogWriter::Config.new()
-    end
-
-    def test_no_userid
-      assert_equal("<!-- ユーザIDが設定されていません -->\n", add_bookscope('1'))
-    end
-
-    def test_add_bookscope
-      @conf.options['bookscope_name'] = 'testid'
-      assert_equal("<!-- BookScopeに登録しました -->\n", add_bookscope('1'))
-    end
-  end
-end
