@@ -218,7 +218,9 @@ module LDBlogWriter
     def a_href(uri, label, cssclass)
       if @conf.auto_trackback == true
         open(uri) do |f|
-          if f.content_type != "text/html"
+          if f.content_type =~ /^image/
+            return get_img_html(uri, label)
+          elsif f.content_type != "text/html"
             break
           end
           contents = f.read

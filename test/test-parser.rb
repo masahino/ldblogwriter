@@ -89,9 +89,11 @@ class TestParser < Test::Unit::TestCase
 
   def test_parse_a_href
     entry = LDBlogWriter::BlogEntry.new(@conf, "test", "category")
-    @parser.to_html("[[hoge:http://blog.livedoor.jp/masahino123/archives/64994357.html]]", entry)
-    assert_equal(["http://trackback.blogsys.jp/livedoor/masahino123/64994357"],
-                 entry.trackback_url_array)
+    ret = @parser.to_html("[[hoge:http://blog.livedoor.jp/masahino123/archives/64994357.html]]", entry)
+    assert_equal("<p>\n<a class=\"outlink\" href=\"http://blog.livedoor.jp/masahino123/archives/64994357.html\">hoge</a>\n</p>", ret)
+    
+    ret = @parser.to_html("[[hoge:http://www.google.co.jp/intl/en_com/images/srpr/logo1w.png]]", entry)
+    assert_equal("<p>\n<a href=\"http://www.google.co.jp/intl/en_com/images/srpr/logo1w.png\" target=\"_blank\"><img src=\"http://www.google.co.jp/intl/en_com/images/srpr/logo1w-s.png\" alt=\"hoge\" hspace=\"5\" class=\"pict\" align=\"left\" /></a>\n</p>", ret)
   end
 
   def test_parse_trackback

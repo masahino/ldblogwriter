@@ -8,9 +8,9 @@ require 'ldblogwriter/plugin/asin.rb'
 
 class TestPluginAsin < Test::Unit::TestCase
   def setup
-    @config = LDBlogWriter::Config.new(ENV['HOME'] + "/.ldblogwriter.conf")
-    @ecs = AmazonECS.new('access_key_id' => @config.options['amazon_access_key_id'],
-                         'secret_key_id' => @config.options['amazon_secret_key_id'])
+    @conf = LDBlogWriter::Config.new(ENV['HOME'] + "/.ldblogwriter.conf")
+    @ecs = AmazonECS.new('access_key_id' => @conf.options['amazon_access_key_id'],
+                         'secret_key_id' => @conf.options['amazon_secret_key_id'])
     end
 
     def test_get_signature
