@@ -17,7 +17,7 @@ class TestPluginAsin < Test::Unit::TestCase
       request_str = "AWSAccessKeyId=00000000000000000000&ItemId=0679722769&Operation=ItemLookup&ResponseGroup=ItemAttributes%2COffers%2CImages%2CReviews&Service=AWSECommerceService&Timestamp=2009-01-01T12%3A00%3A00Z&Version=2009-01-06"
       ecs = AmazonECS.new({'access_key_id' => "00000000000000000000",
                             'secret_key_id' => "1234567890"})
-      assert_equal('Nace%2BU3Az4OhN7tISqgs1vdLBHBEijWcBeCqL5xN9xg%',
+      assert_equal('Nace%2BU3Az4OhN7tISqgs1vdLBHBEijWcBeCqL5xN9xg%3D',
                    ecs.get_signature(request_str, 'webservices.amazon.com'))
     end
     

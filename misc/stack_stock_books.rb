@@ -62,6 +62,7 @@ module StackStockBooks
   class API
     require 'net/http'
     require 'yaml'
+    require 'open-uri'
 
     Net::HTTP.version_1_2
     def initialize(stack_id, api_token)
@@ -81,7 +82,18 @@ module StackStockBooks
         #puts YAML.load(decode(response.body))
       end
     end
+
+    def get_book_list()
+      uri = "http://stack.nayutaya.jp/api/user/name/#{@stack_id}/stocks.json"
+      uri += '?include_books=true'
+      result = URI.parse(uri).read
+      result
+    end
   end
+end
+
+if $0 == __FILE__
+  $test = true
 end
 
 if defined?($test) && $test
@@ -95,10 +107,16 @@ if defined?($test) && $test
     end
 
     def test_authentication
-      StackStockBooks::Agent.new(@config.options['stack_id'],
-                                 @config.options['stack_op_server'],
-                                 @config.options['stack_op_id'],
-                                 @config.options['stack_op_password'])
+#      StackStockBooks::Agent.new(@config.options['stack_id'],
+#                                 @config.options['stack_op_server'],
+#                                 @config.options['stack_op_id'],
+#                                 @config.options['stack_op_password'])
+    end
+
+    def test_get_book_list
+      api = StackStockBooks::API.new(@config.options['stack_id'],
+                                     @config.options['stack_api_token'])
+      pp api.get_book_list
     end
   end
 end

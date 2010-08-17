@@ -30,8 +30,8 @@ class TestPluginPics < Test::Unit::TestCase
     # 投稿に成功したら、
     # responseから画像のURLが分かる筈
     def test_post
-      @conf = LDBlogWriter::Config.new(ENV['HOME'] + '/.ldblogwriter.conf')
-      puts pics('test1.jpg')
+#      @conf = LDBlogWriter::Config.new(ENV['HOME'] + '/.ldblogwriter.conf')
+#      puts pics('test/test.jpg')
     end
 
   

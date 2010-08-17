@@ -29,7 +29,9 @@ module LDBlogWriter
     def save_edit_uri(filename, edit_uri)
       filename = File.basename(filename)
       @edit_uri_h[filename] = edit_uri
-      YAML.dump(@edit_uri_h, File.open(@yaml_file_name, 'w'))
+      if @yaml_file_name != nil
+        YAML.dump(@edit_uri_h, File.open(@yaml_file_name, 'w'))
+      end
     end
     
     def save_html_file(directory, filename, text)

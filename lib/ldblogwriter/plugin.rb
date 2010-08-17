@@ -25,6 +25,7 @@ module LDBlogWriter
           instance_eval(file.read)
         end
       rescue
+        puts plugin_file
       end
     end
 

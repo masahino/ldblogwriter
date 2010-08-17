@@ -1,6 +1,9 @@
 $LOAD_PATH.unshift 'lib'
 
 require 'test/unit'
+
+require 'ldblogwriter/config.rb'
+require 'ldblogwriter/parser.rb'
 require 'ldblogwriter/trackback.rb'
 
 class TestTrackBack < Test::Unit::TestCase
