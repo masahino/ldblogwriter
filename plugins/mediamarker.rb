@@ -6,7 +6,7 @@
 # @options['mediamarker_password']
 def mediamarker(asin)
   require 'date'
-  require 'mediamarker'
+  require 'webookshelf/mediamarker'
 
   user = @conf.options['mediamarker_userid']
   pass = @conf.options['mediamarker_password']
@@ -22,7 +22,8 @@ def mediamarker_post(asin)
   pass = @conf.options['mediamarker_password']
   mediamarker = MediaMarker::Agent.new(user, pass)
   
-#  booklog.comment(asin, @entry.alternate)
+  mediamarker.edit(asin, {'rank' => rank.to_s, 
+                 'description' => @entry.alternate})
   ""
 end
 

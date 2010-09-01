@@ -33,7 +33,7 @@ def stack(asin, state)
 end
 
 def stack_post(asin, state)
-  require 'stack_stock_books'
+  require 'webookshelf/stack_stock_books'
 
   user = @conf.options['stack_id']
   op_server = @conf.options['stack_op_server']

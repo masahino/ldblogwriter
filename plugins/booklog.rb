@@ -6,7 +6,7 @@
 # @options['booklog_password']
 def booklog(asin)
   require 'date'
-  require 'booklog'
+  require 'webookshelf/booklog'
 
   user = @conf.options['booklog_userid']
   pass = @conf.options['booklog_password']
@@ -16,7 +16,7 @@ def booklog(asin)
 end
 
 def booklog_post(asin)
-  require 'booklog'
+  require 'webookshelf/booklog'
 
   user = @conf.options['booklog_userid']
   pass = @conf.options['booklog_password']
@@ -29,7 +29,7 @@ end
 # state: 'read', ...
 # rank: 1,2,3,...
 def booklog_post(asin, state, rank)
-  require 'booklog'
+  require 'webookshelf/booklog'
 
   user = @conf.options['booklog_userid']
   pass = @conf.options['booklog_password']
