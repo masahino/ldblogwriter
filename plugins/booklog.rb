@@ -22,7 +22,7 @@ def booklog_post(asin)
   pass = @conf.options['booklog_password']
   booklog = Booklog::Agent.new(user, pass)
   
-  booklog.comment(asin, @entry.alternate)
+  booklog.comment(asin, @entry.alternate_uri)
   ""
 end
 
@@ -44,7 +44,7 @@ def booklog_post(asin, state, rank)
   end
   booklog.edit(asin, {'rank' => rank.to_s, 
                  'status' => booklog_status,
-                 'description' => @entry.alternate})
+                 'description' => @entry.alternate_uri})
   ""
 end
 

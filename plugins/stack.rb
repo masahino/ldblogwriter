@@ -42,7 +42,7 @@ def stack_post(asin, state)
   
   stack = StackStockBooks::Agent.new(user, op_server, op_id, op_password)
   
-  stack.edit_note(asin, @entry.alternate)
+  stack.edit_note(asin, @entry.alternate_uri)
 end
 
 
