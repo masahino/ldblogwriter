@@ -2,7 +2,6 @@
 $LOAD_PATH.unshift "../lib"
 
 require 'net/http'
-require 'rexml/document'
 require 'pp'
 require 'uri'
 require 'yaml'

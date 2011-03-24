@@ -2,7 +2,6 @@
 require 'uri'
 require 'net/http'
 require 'cgi'
-require 'rexml/document'
 require 'time'
 
 require 'ldblogwriter/service/atompub.rb'

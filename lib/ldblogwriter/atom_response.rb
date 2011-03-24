@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-require 'rexml/document'
+require 'nokogiri'
 
 module LDBlogWriter
 
@@ -11,28 +11,28 @@ module LDBlogWriter
       if @source.respond_to?('force_encoding')
         @source.force_encoding('UTF-8')
       end
-      @doc = REXML::Document.new(source)
+      @doc = Nokogiri::XML.parse(source)
     end
 
     # 1つじゃない?
     def uri
-      return @doc.elements['entry/link'].attributes['href']
+      @doc.xpath('//xmlns:link[@rel="alternate"]/@href').to_s
     end
 
     def collection_uri
       uri_a = []
-      @doc.each_element('service/workspace/collection') do |e|
-        uri_a.push(e.attributes['href'])
+      @doc.xpath('//xmlns:collection/@href').each do |e|
+        uri_a.push(e.value)
       end
       uri_a
     end
 
     def media_src
-      return @doc.elements['entry/content'].attributes['src']
+      @doc.xpath("//xmlns:content/@src").to_s
     end
 
     def title
-      return @doc.elements['entry/title'].text
+      @doc.xpath("//xmlns:title").text
     end
   end
 end

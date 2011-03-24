@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-require 'rexml/document'
 require 'uri'
 require 'net/http'
 require 'net/https'
