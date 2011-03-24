@@ -11,7 +11,7 @@ def mediamarker(asin)
   user = @conf.options['mediamarker_userid']
   pass = @conf.options['mediamarker_password']
   mediamarker = MediaMarker::Agent.new(user, pass)
-  mediamarker.search(asin)
+  mediamarker.add(asin)
   ""
 end
 
