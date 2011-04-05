@@ -114,7 +114,7 @@ module LDBlogWriter
         lines.shift
         syntax_highlight(lines, $1)
       else
-        ["<pre>#{lines.map {|line| escape_html(line) }.join("\n")}",
+        ["<pre>", lines.map {|line| escape_html(line) }.join("\n"),
         '</pre>']
       end
     end
