@@ -8,7 +8,7 @@ require 'yaml'
 require 'kconv'
 
 require 'ldblogwriter/parser'
-require 'ldblogwriter/command'
+#require 'ldblogwriter/command'
 require 'ldblogwriter/config'
 require 'ldblogwriter/wsse'
 require 'ldblogwriter/plugin'
