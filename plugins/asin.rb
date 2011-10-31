@@ -15,10 +15,10 @@ class AmazonECS
   SERVER_NAME = 'webservices.amazon.co.jp'
   SERVICE_URL = 'http://webservices.amazon.co.jp/onca/xml?' #Service=AWSECommerceService'
   def initialize(arg_hash)
-
 #    @subscription_id = arg_hash['subscription_id']
     @access_key_id = arg_hash['access_key_id']
     @secret_access_key = arg_hash['secret_key_id']
+    @assoc_id = arg_hash['assoc_id']
 #    @associate_tag = arg_hash['associate_tag']
 #    @base_url = SERVICE_URL + "&SubscriptionId=#{@subscription_id}&AssociateTag=#{@associate_tag}"
 #    @base_url = SERVICE_URL + "&SubscriptionId=#{@subscription_id}&AssociateTag=#{@associate_tag}"
@@ -53,6 +53,7 @@ class AmazonECS
     timestamp = RFC3986_escape(Time.now.iso8601)
     request_str = "Service=AWSECommeerceService" +
       "&AWSAccessKeyId=#{@access_key_id}" +
+      "&AssociateTag=#{@assoc_id}" + 
       "&Operation=ItemLookup" + 
       "&ResponseGroup=" + RFC3986_escape("Small,Images") +
       "&IdType=ASIN&ItemId=#{asin}" +
@@ -63,11 +64,17 @@ class AmazonECS
     signature = get_signature(request_str)
     request_str += "&Signature="+signature
 
+  puts request_str
+
     uri = SERVICE_URL+request_str
+
+puts uri
 
     item_h = Hash.new
     open(uri) do |f|
       response = f.gets
+
+  pp response
 
       response = REXML::Document.new(response)
       item = response.elements['ItemLookupResponse/Items/Item']
@@ -96,12 +103,14 @@ end
 def asin(asin_str)
   access_key_id = @conf.options['amazon_access_key_id']
   secret_key_id = @conf.options['amazon_secret_key_id']
+  assoc_id = @conf.options['amazon_assoc_id']
   if access_key_id == nil or secret_key_id == nil
     return
   end
 #  cache_dir = ENV['HOME'] + "/.amazon_cache"
   ecs = AmazonECS.new('access_key_id' => access_key_id,
-                      'secret_key_id' => secret_key_id)
+                      'secret_key_id' => secret_key_id,
+                      'assoc_id' => assoc_id)
   item = ecs.item_lookup(asin_str)
   image_url_large = image_url_medium = nil
  
@@ -141,7 +150,9 @@ if defined?($test) && $test
     def setup
       @config = LDBlogWriter::Config.new(ENV['HOME']+'/.ldblogwriter.conf')
       @ecs = AmazonECS.new('access_key_id' => @config.options['amazon_access_key_id'],
-                           'secret_key_id' => @config.options['amazon_secret_key_id'])
+                           'secret_key_id' => @config.options['amazon_secret_key_id'],
+                           'assoc_id' => @config.options['amazon_assoc_id']
+                           )
     end
 
     def test_get_signature
