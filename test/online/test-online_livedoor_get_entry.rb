@@ -15,7 +15,7 @@ class TestLiveDoorGetEntry < Test::Unit::TestCase
   end
   
   def test_get_entry
-    @ld.get_entries(entries.first[1])
+     @ld.get_entry(@entry_manager.get_entries['20111116-1.txt'])
   end
 end
 

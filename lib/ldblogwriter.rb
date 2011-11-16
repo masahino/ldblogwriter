@@ -75,7 +75,9 @@ module LDBlogWriter
           @service.edit_entry(edit_uri, entry.content, entry.title, entry.category)
         end
       end
-
+      
+      entry.alternate_uri = @service.get_entry(edit_uri).uri
+      
       if @conf.auto_trackback == true
         send_trackback(entry)
       end
@@ -92,7 +94,7 @@ module LDBlogWriter
         pp ret
         if ret == "y" or ret == "Y" 
           TrackBack.send(trackback_url, @conf.blog_title, entry.title,
-                         entry.summary, entry.alternate)
+                         "", entry.alternate_uri)
         end
       end
     end
