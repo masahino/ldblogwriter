@@ -41,14 +41,11 @@ module LDBlogWriter
       @entry_manager = LDBlogWriter::EntryManager.new(@conf.edit_uri_file)
     end
 
-    def post_entry(filename, dry_run = true)
-      @blog_filename = filename
-      puts "post entry"
+    def create_entry(filename, dry_run = true)
       if filename == nil
         print_usage
         exit
       end
-      puts "filename : #{filename}"
       # load
       src_text = ""
       File.open(filename, "r") do |file|
@@ -56,6 +53,13 @@ module LDBlogWriter
         src_text = Kconv::toutf8(src_text)
       end
       entry = Parser.new(@conf, @plugin, @service).get_entry(src_text)
+    end
+
+    def post_entry(filename, dry_run = true)
+      puts "post entry"
+      puts "filename : #{filename}"
+      @blog_filename = filename
+      entry = create_entry(filename, dry_run)
 
       if @entry_manager.has_entry?(filename) == false
         # post
@@ -154,6 +158,25 @@ module LDBlogWriter
 
     def print_usage
       puts "#{$0} [-n] <text file>" 
+    end
+
+    def preview_entry(filename, dry_run = true)
+      require 'tmpdir'
+      entry = create_entry(filename, dry_run)
+      preview_filename = Dir.tmpdir+"/"+File.basename(filename, ".*")+".html"
+      File.open(preview_filename, 'w') do |f|
+        f.puts <<EOF
+<html>
+<head>
+<title>#{entry.title}</title>
+</head>
+<body>
+#{entry.content}
+</body>
+</html>
+EOF
+      end
+      preview_filename
     end
   end
 end

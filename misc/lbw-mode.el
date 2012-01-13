@@ -9,6 +9,14 @@
   "blog投稿用のコマンドのオプション."
   :type 'string
   :group 'lbw-mode)
+(defcustom lbw-preview-command "lbw"
+  "blog投稿用コマンド. Emacsが実行可能なファイルである必要がある."
+  :type 'filename
+  :group 'lbw-mode)
+(defcustom lbw-preview-command-option "-p"  ; 未使用
+  "blog投稿用のコマンドのオプション."
+  :type 'string
+  :group 'lbw-mode)
 (defcustom lbw-yesterday-time 2
   "この時間(hour)を超えるまでは前日としてdiaryファイルを作成/取りあつかう."
   :type 'number
@@ -30,6 +38,7 @@
   (setq major-mode 'lbw-mode)
   (setq mode-name "livedoorBlogWriter")
   (local-set-key "\C-c\C-c" 'lbw-post)
+  (local-set-key "\C-cp" 'lbw-preview)
   (local-set-key "\C-ci" 'lbw-insert-image))
 
 (defun lbw-post (arg)
@@ -40,8 +49,8 @@
 	(filename buffer-file-name)
 	proc)
     (basic-save-buffer) ; 実行前にbufferをsave
-    (if (not (exec-installed-p lbw-post-command))
-	(error "lbw-post-commandが正しく設定されていないようです."))
+;    (if (not (exec-installed-p lbw-post-command))
+;	(error "lbw-post-commandが正しく設定されていないようです."))
     (save-excursion
       (set-buffer (get-buffer-create "*lbw-post*"))
       (if (get-process "lbw-post")
@@ -136,5 +145,22 @@
   (interactive "P")
   (setq img_file_path (expand-file-name (read-file-name "image file name:")))
   (insert (format "#img(\"%s\")" img_file_path)))
+
+(defun lbw-preview (arg)
+  "プレビューする"
+  (interactive "P")
+  (let ((com lbw-preview-command)
+	(opt lbw-preview-command-option)
+	(filename buffer-file-name)
+	proc)
+    (basic-save-buffer) ; 実行前にbufferをsave
+    (save-excursion
+      (setq output (shell-command-to-string
+		   (concat com " " opt " " filename)))
+      (setq output_url
+	    (concat "file:"
+		    (replace-regexp-in-string "[\n\r]+$" "" output_url)))
+      (browse-url output_url)
+      )))
 
 (provide 'lbw-mode)

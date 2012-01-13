@@ -1,4 +1,4 @@
-#! /opt/local/bin/ruby1.9
+#! /usr/local/Cellar/ruby/1.9.3-p0/bin/ruby
 # -*- coding: utf-8 -*-
 
 require 'ldblogwriter'
@@ -6,11 +6,19 @@ require 'optparse'
 
 opt = OptionParser.new
 dry_run = false
+preview_mode = false
 config_file = nil
 opt.on('-n') {|v| dry_run = v}
+opt.on('-p') {|v| preview_mode = v}
 opt.on('-f CONFIG_FILE') {|v| config_file = v}
 
 opt.parse!(ARGV)
 
+# ToDo check arguments!!!
 blog = LDBlogWriter::Blog.new(config_file)
-blog.post_entry(ARGV[0], dry_run)
+if preview_mode == true
+  preview_filename = blog.preview_entry(ARGV[0], dry_run)
+puts preview_filename
+else
+  blog.post_entry(ARGV[0], dry_run)
+end

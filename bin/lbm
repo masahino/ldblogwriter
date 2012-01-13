@@ -1,4 +1,4 @@
-#! /opt/local/bin/ruby1.9
+#! /usr/local/Cellar/ruby/1.9.3-p0/bin/ruby
 # -*- coding: utf-8 -*-
 
 require 'ldblogwriter'
