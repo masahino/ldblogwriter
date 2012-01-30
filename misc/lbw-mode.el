@@ -159,7 +159,7 @@
 		   (concat com " " opt " " filename)))
       (setq output_url
 	    (concat "file:"
-		    (replace-regexp-in-string "[\n\r]+$" "" output_url)))
+		    (replace-regexp-in-string "[\n\r]+$" "" output)))
       (browse-url output_url)
       )))
 
