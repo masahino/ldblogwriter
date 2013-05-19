@@ -39,7 +39,23 @@
   (setq mode-name "livedoorBlogWriter")
   (local-set-key "\C-c\C-c" 'lbw-post)
   (local-set-key "\C-cp" 'lbw-preview)
-  (local-set-key "\C-ci" 'lbw-insert-image))
+  (local-set-key "\C-ci" 'lbw-insert-image)
+  (local-set-key "\C-c>" 'lbw-insert-space-region))
+
+(defun lbw-insert-space-region (begin end)
+  "regionを1文字分インデントする"
+  (interactive "r")
+  (let ((start-line (line-number-at-pos begin))
+	(end-line (line-number-at-pos end))
+	proc)
+	(save-excursion
+	  (setq pos start-line)
+	  (message "Region %d, %d" start-line end-line)
+	  (while (<= pos end-line) 
+	    (goto-line pos)
+	    (insert " ")
+	    (setq pos (+ 1 pos))))))
+
 
 (defun lbw-post (arg)
   "ブログをポストする"
