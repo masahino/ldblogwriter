@@ -101,7 +101,7 @@ module LDBlogWriter
       end
       buf
     end
-
+   
     def syntax_highlight(lines, lang)
       require 'syntax/convertors/html'
       convertor = Syntax::Convertors::HTML.for_syntax lang
@@ -113,6 +113,9 @@ module LDBlogWriter
       if lines.first =~ /\Ahighlight\((.*)\)/
         lines.shift
         syntax_highlight(lines, $1)
+      elsif lines.first =~ /\A#prettyprint/
+        lines.shift
+        ["<pre class=\"prettyprint\">", lines.join("\n"), "</pre>"]
       else
         ["<pre>", lines.map {|line| escape_html(line) }.join("\n"),
         '</pre>']
